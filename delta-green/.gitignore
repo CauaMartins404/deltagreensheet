@@ -1,0 +1,19 @@
+# Dependências
+node_modules/
+
+# Segredos — NUNCA vão para o GitHub
+.env
+.env.*
+!.env.example
+*.env
+*credentials*
+*.pem
+*.key
+
+# Netlify local
+.netlify/
+
+# Sistema
+.DS_Store
+Thumbs.db
+*.log

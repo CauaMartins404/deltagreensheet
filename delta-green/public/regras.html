@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Guia de referência em português para as regras de Delta Green: testes, perícias, combate, dano, sanidade, Bonds, Home e condução de mesa.">
+  <title>DELTA GREEN // Protocolos Operacionais</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #080a09;
+      --surface: #101412;
+      --surface-2: #151a17;
+      --surface-3: #1b211d;
+      --line: #29312c;
+      --line-strong: #3a463f;
+      --text: #e7ebe8;
+      --muted: #98a29c;
+      --faint: #657068;
+      --green: #00e676;
+      --green-2: #8dffc0;
+      --green-dim: rgba(0, 230, 118, .10);
+      --red: #ff5d65;
+      --red-dim: rgba(255, 93, 101, .10);
+      --yellow: #ffc247;
+      --yellow-dim: rgba(255, 194, 71, .10);
+      --blue: #61a8ff;
+      --blue-dim: rgba(97, 168, 255, .10);
+      --purple: #c49bff;
+      --shadow: 0 18px 55px rgba(0,0,0,.35);
+      --mono: "Courier Prime", ui-monospace, SFMono-Regular, Consolas, monospace;
+      --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --header-h: 68px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header-h) + 22px); }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 18% -10%, rgba(0,230,118,.08), transparent 28rem),
+        radial-gradient(circle at 100% 20%, rgba(97,168,255,.04), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.65;
+      min-height: 100vh;
+    }
+    a { color: inherit; }
+    button, input { font: inherit; }
+    ::selection { background: rgba(0,230,118,.28); color: #fff; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      min-height: var(--header-h);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 11px clamp(14px, 3vw, 32px);
+      border-bottom: 1px solid rgba(58,70,63,.72);
+      background: rgba(8,10,9,.90);
+      backdrop-filter: blur(16px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: max-content;
+      text-decoration: none;
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+    .brand-mark {
+      width: 35px;
+      height: 35px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font: 700 .82rem var(--mono);
+      box-shadow: inset 0 0 18px rgba(0,230,118,.08);
+    }
+    .brand-text { font-size: .97rem; text-transform: uppercase; }
+    .brand-text span { color: var(--green); }
+
+    .top-search {
+      flex: 1;
+      position: relative;
+      max-width: 580px;
+      margin-inline: auto;
+    }
+    .top-search input {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 42px 9px 14px;
+      color: var(--text);
+      background: #0d100e;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .top-search input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0,230,118,.10);
+    }
+    .top-search .shortcut {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--faint);
+      font: 700 .72rem var(--mono);
+      border: 1px solid var(--line);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .toolbar { display: flex; gap: 8px; }
+    .tool-btn {
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #0d100e;
+      color: var(--muted);
+      cursor: pointer;
+      font: 700 .75rem var(--mono);
+      text-transform: uppercase;
+      transition: .2s;
+    }
+    .tool-btn:hover { color: var(--green); border-color: var(--green); }
+
+    .page {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      gap: 34px;
+      padding: 38px clamp(16px, 3vw, 36px) 90px;
+    }
+
+    .toc {
+      position: sticky;
+      top: calc(var(--header-h) + 24px);
+      align-self: start;
+      max-height: calc(100vh - var(--header-h) - 44px);
+      overflow: auto;
+      padding: 18px;
+      background: rgba(16,20,18,.72);
+      border: 1px solid var(--line);
+      border-radius: 7px;
+    }
+    .toc-title {
+      margin: 0 0 11px;
+      color: var(--green);
+      font: 700 .78rem var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .toc a {
+      display: block;
+      margin: 2px 0;
+      padding: 7px 9px;
+      border-left: 2px solid transparent;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .82rem;
+      transition: .18s;
+    }
+    .toc a:hover, .toc a.active {
+      color: var(--text);
+      border-left-color: var(--green);
+      background: var(--green-dim);
+    }
+    .toc small { display: block; margin-top: 14px; color: var(--faint); font: .68rem var(--mono); }
+
+    main { min-width: 0; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(28px, 5vw, 56px);
+      border: 1px solid var(--line-strong);
+      background:
+        linear-gradient(135deg, rgba(0,230,118,.08), transparent 48%),
+        linear-gradient(180deg, #111613, #0d110f);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+    }
+    .hero::after {
+      content: "EYES ONLY // ORCON // DG";
+      position: absolute;
+      right: -38px;
+      bottom: 18px;
+      transform: rotate(-6deg);
+      color: rgba(0,230,118,.10);
+      font: 900 clamp(1.3rem, 4vw, 3.2rem) var(--mono);
+      letter-spacing: .12em;
+      pointer-events: none;
+    }
+    .eyebrow { color: var(--green); font: 700 .78rem var(--mono); letter-spacing: .15em; text-transform: uppercase; }
+    h1 {
+      max-width: 850px;
+      margin: 12px 0 14px;
+      font-size: clamp(2.1rem, 6vw, 4.7rem);
+      line-height: .98;
+      letter-spacing: -.065em;
+      text-transform: uppercase;
+    }
+    .hero p { max-width: 780px; margin: 0; color: #b8c0bb; font-size: 1rem; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .hero-actions a {
+      padding: 9px 13px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--muted);
+      font: 700 .76rem var(--mono);
+      text-transform: uppercase;
+      transition: .2s;
+    }
+    .hero-actions a:hover { color: #061009; background: var(--green); border-color: var(--green); }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 12px;
+      margin: 18px 0 0;
+    }
+    .quick-card {
+      padding: 15px;
+      background: rgba(8,10,9,.82);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+    .quick-card b { display: block; color: var(--green); font: 700 .78rem var(--mono); text-transform: uppercase; }
+    .quick-card span { display: block; margin-top: 5px; color: var(--text); font-weight: 800; font-size: .96rem; }
+
+    .notice {
+      margin: 22px 0;
+      padding: 16px 18px;
+      border-left: 4px solid var(--green);
+      background: var(--green-dim);
+      color: #cbe8d8;
+      border-radius: 0 5px 5px 0;
+    }
+    .notice.warning { border-color: var(--yellow); background: var(--yellow-dim); color: #ffe8b1; }
+    .notice.danger { border-color: var(--red); background: var(--red-dim); color: #ffd0d3; }
+    .notice.info { border-color: var(--blue); background: var(--blue-dim); color: #d3e6ff; }
+    .notice strong { color: #fff; }
+
+    section.rule-section {
+      margin-top: 62px;
+      padding-top: 5px;
+    }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-number { color: var(--green); font: 700 .75rem var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+    h2 {
+      margin: 4px 0 0;
+      font-size: clamp(1.45rem, 3vw, 2.25rem);
+      line-height: 1.15;
+      letter-spacing: -.035em;
+      text-transform: uppercase;
+    }
+    .audience { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 8px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      color: var(--muted);
+      font: 700 .66rem var(--mono);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tag.player { color: var(--green-2); border-color: rgba(0,230,118,.4); }
+    .tag.handler { color: #ffd785; border-color: rgba(255,194,71,.4); }
+
+    h3 {
+      margin: 30px 0 10px;
+      color: var(--green-2);
+      font-size: 1.03rem;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    h4 { margin: 18px 0 7px; color: #fff; font-size: .96rem; }
+    p { margin: 10px 0; color: #c5cbc7; }
+    ul, ol { color: #c5cbc7; }
+    li + li { margin-top: 5px; }
+    strong { color: #fff; }
+    code, .dice {
+      padding: 2px 6px;
+      border: 1px solid #314037;
+      border-radius: 4px;
+      background: #070908;
+      color: var(--green-2);
+      font: 700 .86em var(--mono);
+      white-space: nowrap;
+    }
+
+    .grid-2, .grid-3, .grid-4 { display: grid; gap: 14px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .card {
+      padding: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+    }
+    .card > :first-child { margin-top: 0; }
+    .card > :last-child { margin-bottom: 0; }
+    .card-title { color: var(--green); font: 700 .81rem var(--mono); text-transform: uppercase; }
+    .formula { display: block; margin: 9px 0; color: #fff; font: 700 1rem var(--mono); }
+
+    .table-wrap {
+      margin: 16px 0;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: .89rem; }
+    th {
+      padding: 11px 13px;
+      background: #0c0f0d;
+      border-bottom: 1px solid var(--line-strong);
+      color: var(--green);
+      text-align: left;
+      font: 700 .72rem var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    td { padding: 11px 13px; border-bottom: 1px solid #202722; vertical-align: top; color: #cbd1cd; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: rgba(255,255,255,.018); }
+    td:first-child { color: #fff; font-weight: 650; }
+
+    details {
+      margin: 10px 0;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      overflow: clip;
+    }
+    summary {
+      cursor: pointer;
+      padding: 14px 16px;
+      color: #fff;
+      font-weight: 750;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--green); font: 700 1rem var(--mono); }
+    details[open] summary::after { content: "−"; }
+    .details-body { padding: 0 16px 16px; border-top: 1px solid var(--line); }
+
+    .skill-tools {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .skill-tools input, .skill-tools select {
+      min-height: 40px;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 5px;
+      background: #0c0f0d;
+      color: var(--text);
+      outline: none;
+    }
+    .skill-tools input { flex: 1; min-width: 220px; }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+    }
+    .skill-card {
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 5px;
+    }
+    .skill-card.hidden, .searchable.search-hidden { display: none !important; }
+    .skill-top { display: flex; justify-content: space-between; align-items: start; gap: 12px; }
+    .skill-name { color: #fff; font-weight: 800; }
+    .skill-en { display: block; color: var(--faint); font: .69rem var(--mono); text-transform: uppercase; }
+    .skill-base { color: var(--green); font: 700 .85rem var(--mono); white-space: nowrap; }
+    .skill-card p { margin: 8px 0 0; color: #adb7b0; font-size: .85rem; }
+    .skill-group { display: inline-block; margin-top: 9px; color: var(--blue); font: 700 .65rem var(--mono); text-transform: uppercase; }
+
+    .flow {
+      counter-reset: flow;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0,1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .flow-step {
+      position: relative;
+      padding: 42px 14px 14px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      border-radius: 5px;
+    }
+    .flow-step::before {
+      counter-increment: flow;
+      content: counter(flow, decimal-leading-zero);
+      position: absolute;
+      top: 10px;
+      left: 13px;
+      color: var(--green);
+      font: 700 .78rem var(--mono);
+    }
+    .flow-step b { color: #fff; font-size: .89rem; }
+    .flow-step p { margin: 5px 0 0; font-size: .81rem; color: var(--muted); }
+
+    .mini-rule {
+      padding: 10px 12px;
+      border-left: 3px solid var(--line-strong);
+      background: rgba(255,255,255,.018);
+      margin: 9px 0;
+    }
+    .mini-rule b { color: var(--green-2); }
+
+    .no-results {
+      display: none;
+      padding: 18px;
+      border: 1px dashed var(--line-strong);
+      color: var(--muted);
+      text-align: center;
+      font: .82rem var(--mono);
+    }
+
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: 50%;
+      background: rgba(8,10,9,.9);
+      color: var(--green);
+      text-decoration: none;
+      opacity: 0;
+      pointer-events: none;
+      transition: .2s;
+      z-index: 999;
+    }
+    .back-top.visible { opacity: 1; pointer-events: auto; }
+
+    footer {
+      margin-top: 70px;
+      padding: 24px 0 0;
+      border-top: 1px solid var(--line);
+      color: var(--faint);
+      font: .72rem var(--mono);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    @media (max-width: 1050px) {
+      .page { grid-template-columns: 1fr; }
+      .toc { display: none; }
+      .quick-grid, .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .flow { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      :root { --header-h: 118px; }
+      .topbar { flex-wrap: wrap; gap: 9px; }
+      .brand { flex: 1; }
+      .top-search { order: 3; width: 100%; max-width: none; }
+      .toolbar .label { display: none; }
+      .page { padding-top: 24px; }
+      .hero { padding: 27px 20px; }
+      .hero::after { display: none; }
+      .quick-grid, .grid-2, .grid-3, .grid-4, .skills-grid, .flow { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+      .audience { justify-content: flex-start; }
+      table { min-width: 580px; }
+    }
+
+    @media print {
+      :root { color-scheme: light; }
+      body { background: #fff; color: #111; font-size: 10.5pt; }
+      .topbar, .toc, .hero-actions, .skill-tools, .back-top, .toolbar, .shortcut { display: none !important; }
+      .page { display: block; width: 100%; padding: 0; }
+      main { width: 100%; }
+      .hero, .card, details, .skill-card, .table-wrap, .quick-card, .flow-step {
+        background: #fff !important;
+        color: #111 !important;
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      .hero { border: 2px solid #222; }
+      .hero::after { display: none; }
+      p, li, td { color: #222 !important; }
+      h1, h2, h3, h4, strong, .skill-name { color: #000 !important; }
+      .section-number, .card-title, .skill-base, th, code, .dice { color: #006b36 !important; }
+      section.rule-section { margin-top: 32px; }
+      details .details-body { display: block; }
+      details { break-inside: avoid; }
+      a { text-decoration: none; }
+    }
+  </style>
+</head>
+<body>
+<header class="topbar" id="topo">
+  <a class="brand" href="#topo" aria-label="Voltar ao topo">
+    <span class="brand-mark">DG</span>
+    <span class="brand-text">DELTA<span>GREEN</span> // PROTOCOLOS</span>
+  </a>
+  <label class="top-search">
+    <input id="globalSearch" type="search" placeholder="Pesquisar regra, perícia ou termo…" autocomplete="off" aria-label="Pesquisar no guia">
+    <span class="shortcut">Ctrl K</span>
+  </label>
+  <div class="toolbar">
+    <a class="tool-btn" href="index.html"><span class="label">Voltar ao sistema</span> ←</a>
+    <button class="tool-btn" id="toggleDetails" type="button"><span class="label">Abrir seções</span> ↕</button>
+    <button class="tool-btn" type="button" onclick="window.print()"><span class="label">Imprimir</span> ⎙</button>
+  </div>
+</header>
+
+<div class="page">
+  <aside class="toc" aria-label="Índice do guia">
+    <p class="toc-title">Índice operacional</p>
+    <a href="#fundamentos">00. Fluxo básico</a>
+    <a href="#testes">01. Testes e D100</a>
+    <a href="#agente">02. O Agente</a>
+    <a href="#pericias">03. Perícias</a>
+    <a href="#combate">04. Combate</a>
+    <a href="#dano">05. Dano e morte</a>
+    <a href="#sanidade">06. SAN e transtornos</a>
+    <a href="#bonds">07. Bonds e WP</a>
+    <a href="#home">08. Home</a>
+    <a href="#equipamento">09. Equipamento</a>
+    <a href="#situacoes">10. Situações especiais</a>
+    <a href="#handler">11. Protocolo do Handler</a>
+    <a href="#consulta">12. Consulta rápida</a>
+    <small>Resumo não oficial. Sem segredos de cenário ou operações prontas.</small>
+  </aside>
+
+  <main id="conteudo">
+    <div class="hero searchable" data-search="guia regras delta green protocolos operacionais resumo jogador mestre handler">
+      <div class="eyebrow">Documento de referência // acesso compartilhado</div>
+      <h1>Protocolos Operacionais</h1>
+      <p>Guia de mesa para jogadores e Handler: mecânica percentual, criação de Agentes, todas as perícias, combate, dano, Sanidade, Bonds, Willpower, cenas de Home e princípios para conduzir investigações.</p>
+      <div class="hero-actions">
+        <a href="#consulta">Consulta rápida</a>
+        <a href="#pericias">Buscar perícia</a>
+        <a href="#combate">Combate</a>
+        <a href="#sanidade">Sanidade</a>
+      </div>
+      <div class="quick-grid">
+        <div class="quick-card"><b>Teste padrão</b><span>1D100 ≤ valor</span></div>
+        <div class="quick-card"><b>Atributo</b><span>STAT × 5</span></div>
+        <div class="quick-card"><b>HP</b><span>(STR + CON) ÷ 2 ↑</span></div>
+        <div class="quick-card"><b>Breaking Point</b><span>SAN atual − POW</span></div>
+      </div>
+    </div>
+
+    <div class="notice warning searchable" data-search="aviso resumo livros oficiais regras casa homebrew">
+      <strong>Escopo:</strong> esta página resume regras gerais que todos na mesa podem conhecer. Habilidades especiais, artefatos e poderes próprios da campanha devem aparecer em páginas separadas e ser identificados como <em>homebrew</em>. Em caso de dúvida, prevalecem o <em>Agent’s Handbook</em>, o <em>Handler’s Guide</em> e a decisão consistente do Handler.
+    </div>
+
+    <section class="rule-section searchable" id="fundamentos" data-search="fluxo básico descrição jogador handler decisão teste consequência">
+      <div class="section-head">
+        <div><div class="section-number">00 // Fluxo básico</div><h2>Como o jogo funciona</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <div class="flow">
+        <div class="flow-step"><b>O Handler descreve</b><p>Local, pessoas, ameaças, pistas e o que está acontecendo agora.</p></div>
+        <div class="flow-step"><b>O jogador declara</b><p>O que o Agente faz, como faz e qual resultado está tentando alcançar.</p></div>
+        <div class="flow-step"><b>O Handler decide</b><p>Se é automático, impossível ou se exige uma perícia/atributo e uma rolagem.</p></div>
+        <div class="flow-step"><b>A ficção muda</b><p>Sucesso ou falha sempre produz informação, custo, perigo ou nova decisão.</p></div>
+      </div>
+      <div class="notice">
+        <strong>Regra central:</strong> não role porque existe uma perícia na ficha. Role quando houver <strong>incerteza, pressão e consequência</strong>. Sem pressão, um profissional competente costuma realizar tarefas rotineiras sem dado.
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Papel do jogador</div><p>Falar e decidir pelo próprio Agente, agir com base no que ele sabe, cooperar com a equipe e aceitar que escolhas ruins ou riscos reais podem ter consequências permanentes.</p></div>
+        <div class="card"><div class="card-title">Papel do Handler</div><p>Apresentar o mundo e todos os NPCs, revelar pistas, arbitrar regras, manter pressão e suspense, e representar as consequências sem jogar contra os participantes.</p></div>
+      </div>
+    </section>
+
+    <section class="rule-section searchable" id="testes" data-search="teste d100 crítico falha crítica fumble oposto bônus penalidade sorte luck perseguição evolução perícia">
+      <div class="section-head">
+        <div><div class="section-number">01 // Mecânica central</div><h2>Testes, D100 e oposição</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <h3>Escolha entre perícia e atributo</h3>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Perícia</div><p>Use quando a ação depende de treinamento especializado: Medicina, Armas de Fogo, Computação, Lei, Furtividade etc.</p></div>
+        <div class="card"><div class="card-title">Atributo</div><p>Use quando qualquer pessoa poderia tentar sem treinamento. A chance é <code>atributo × 5</code>: STR para força, CON para resistência, DEX para coordenação, INT para raciocínio, POW para vontade e CHA para presença.</p></div>
+      </div>
+
+      <h3>Resultado da rolagem</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resultado</th><th>Efeito</th><th>Observação</th></tr></thead>
+          <tbody>
+            <tr><td><code>≤ valor testado</code></td><td>Sucesso</td><td>O Agente alcança um resultado plausível.</td></tr>
+            <tr><td><code>&gt; valor testado</code></td><td>Falha</td><td>Não consegue, demora, se expõe, perde recurso ou enfrenta outra consequência.</td></tr>
+            <tr><td><code>01</code> ou dígitos iguais em um sucesso</td><td>Sucesso crítico</td><td>O melhor resultado razoável dentro daquela situação.</td></tr>
+            <tr><td><code>100</code> ou dígitos iguais em uma falha</td><td>Falha crítica / fumble</td><td>A ação falha e surge uma complicação adicional coerente.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mini-rule"><b>Exemplo:</b> com Procurar 60%, 44 é crítico; 66 é falha crítica. Com 30%, 22 é crítico; 33 já é falha crítica.</p>
+
+      <h3>Bônus e penalidades</h3>
+      <div class="grid-4">
+        <div class="card"><span class="formula">+20%</span><p>Situação excepcionalmente favorável.</p></div>
+        <div class="card"><span class="formula">−20%</span><p>Situação excepcionalmente difícil.</p></div>
+        <div class="card"><span class="formula">+40%</span><p>Vantagem extraordinária e rara.</p></div>
+        <div class="card"><span class="formula">−40%</span><p>Desvantagem extrema; talvez a ação seja impossível.</p></div>
+      </div>
+      <p>Os modificadores alteram apenas a chance daquele teste. <code>01</code> continua sendo crítico e <code>100</code> continua sendo fumble.</p>
+
+      <h3>Testes opostos</h3>
+      <ol>
+        <li>Ambos os lados rolam a perícia ou atributo adequado.</li>
+        <li>Crítico vence sucesso comum; sucesso vence falha.</li>
+        <li>Se ambos tiverem sucesso do mesmo grau, vence a <strong>maior rolagem que ainda passou</strong>.</li>
+        <li>Se ambos falharem, o Handler decide: impasse, nova tentativa, mudança da situação ou vitória com custo.</li>
+      </ol>
+      <div class="notice info"><strong>Por que a maior rolagem vence?</strong> Porque ela representa quem chegou mais perto do próprio limite sem ultrapassá-lo.</div>
+
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Teste de Sorte</div><p>Quando o resultado não depende de competência, role <code>1D100</code> com <strong>50%</strong>: o celular sobreviveu? Existe uma ferramenta no carro? O guarda escolheu o corredor errado?</p></div>
+        <div class="card"><div class="card-title">Perseguições</div><p>Use testes opostos adequados. Uma perseguição curta usa um teste; uma longa geralmente exige duas vitórias. Crítico vale duas vitórias e fumble vale duas derrotas.</p></div>
+      </div>
+
+      <h3>Aprendizado de perícias</h3>
+      <div class="card">
+        <p>Quando um Agente <strong>tenta usar uma perícia e falha</strong> em uma situação relevante, marque a caixa dessa perícia. Ao final da sessão, cada perícia marcada aumenta em <code>+1%</code>; depois, apague as marcações.</p>
+        <p>Testes de atributo não recebem esse aumento automático. A evolução maior de atributos ou perícias acontece em uma cena de Home.</p>
+      </div>
+    </section>
+
+    <section class="rule-section searchable" id="agente" data-search="criação agente atributos stats STR CON DEX INT POW CHA HP WP SAN breaking point profissão bonds motivações">
+      <div class="section-head">
+        <div><div class="section-number">02 // Ficha</div><h2>Construindo e lendo um Agente</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <h3>Os seis atributos</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Atributo</th><th>Representa</th><th>Exemplos de teste</th></tr></thead>
+          <tbody>
+            <tr><td>STR — Força</td><td>Potência muscular e capacidade física.</td><td>Arrombar, erguer, segurar, forçar passagem.</td></tr>
+            <tr><td>CON — Constituição</td><td>Saúde, fôlego e resistência corporal.</td><td>Veneno, doença, exaustão, choque físico.</td></tr>
+            <tr><td>DEX — Destreza</td><td>Coordenação, reflexo e controle fino.</td><td>Equilíbrio, rapidez manual, ação delicada.</td></tr>
+            <tr><td>INT — Inteligência</td><td>Raciocínio, memória e capacidade analítica.</td><td>Deduzir, lembrar, compreender um padrão.</td></tr>
+            <tr><td>POW — Poder</td><td>Vontade, estabilidade e resistência mental.</td><td>Resistir a coerção, manter foco, suportar influência.</td></tr>
+            <tr><td>CHA — Carisma</td><td>Presença, empatia e capacidade de sustentar relações.</td><td>Impressionar, liderar ou conectar-se quando nenhuma perícia social se aplica.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Atributos humanos normalmente variam de <code>3</code> a <code>18</code>. Valores abaixo de 9 ou acima de 12 já são características marcantes.</p>
+
+      <h3>Valores derivados</h3>
+      <div class="grid-4">
+        <div class="card"><div class="card-title">Hit Points</div><span class="formula">HP = (STR + CON) ÷ 2</span><p>Arredonde para cima.</p></div>
+        <div class="card"><div class="card-title">Willpower</div><span class="formula">WP = POW</span><p>Energia e resistência mental imediata.</p></div>
+        <div class="card"><div class="card-title">Sanidade</div><span class="formula">SAN inicial = POW × 5</span><p>A SAN atual pode subir ou cair durante a campanha.</p></div>
+        <div class="card"><div class="card-title">Breaking Point</div><span class="formula">BP = SAN atual − POW</span><p>Recalcule sempre que for atingido.</p></div>
+      </div>
+
+      <h3>Criação resumida</h3>
+      <ol>
+        <li><strong>Escolha a profissão:</strong> ela define o papel, as perícias profissionais, o número de Bonds e os recursos plausíveis.</li>
+        <li><strong>Defina atributos:</strong> role 4D6 e descarte o menor para cada atributo, ou distribua 72 pontos entre os seis, respeitando os limites do livro.</li>
+        <li><strong>Calcule HP, WP, SAN e BP.</strong></li>
+        <li><strong>Aplique perícias da profissão e bônus de criação.</strong> Unnatural não pode ser aumentado livremente como uma perícia comum.</li>
+        <li><strong>Defina Bonds:</strong> cada Bond começa igual ao CHA e deve representar uma pessoa ou grupo concreto.</li>
+        <li><strong>Escolha motivações:</strong> até cinco razões, princípios ou hábitos que mantêm o Agente funcionando.</li>
+        <li><strong>Finalize:</strong> nome, empregador, autoridade, aparência, equipamentos, evento de recrutamento e motivo para continuar aceitando operações.</li>
+      </ol>
+
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Profissão não é classe</div><p>Ela descreve carreira, treinamento, acesso institucional e experiência. Não há níveis. Um médico pode aprender a atirar; um soldado pode estudar História ou Computação.</p></div>
+        <div class="card"><div class="card-title">Motivações</div><p>Podem recuperar 1 WP quando cumpridas de forma significativa. Ao atingir um Breaking Point, o Agente perde uma motivação como sintoma do trauma.</p></div>
+      </div>
+    </section>
+
+    <section class="rule-section searchable" id="pericias" data-search="perícias skills investigação social física técnica acadêmica combate unnatural medicina armas furtividade procurar">
+      <div class="section-head">
+        <div><div class="section-number">03 // Competências</div><h2>Todas as perícias</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <p>O valor entre parênteses é a <strong>base oficial</strong> de um adulto sem treinamento adicional. Profissão, bônus e experiência substituem ou aumentam esse valor. Perícias com especialização — como Ciência, Arte, Ofício, Língua Estrangeira, Pilotar e Ciência Militar — são registradas separadamente.</p>
+
+      <div class="skill-tools">
+        <input id="skillSearch" type="search" placeholder="Filtrar perícias: medicina, combate, investigação…" aria-label="Filtrar perícias">
+        <select id="skillCategory" aria-label="Filtrar por categoria">
+          <option value="all">Todas as categorias</option>
+          <option value="investigacao">Investigação</option>
+          <option value="social">Social</option>
+          <option value="fisica">Física e campo</option>
+          <option value="tecnica">Técnica e acadêmica</option>
+          <option value="combate">Combate</option>
+          <option value="unnatural">Unnatural</option>
+        </select>
+      </div>
+
+      <div class="skills-grid" id="skillsGrid">
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">Contabilidade</span><span class="skill-en">Accounting</span></div><span class="skill-base">10%</span></div><p>Auditar contas, rastrear dinheiro, reconhecer fraude, lavagem, desvio e inconsistências financeiras.</p><span class="skill-group">Técnica</span></article>
+        <article class="skill-card" data-category="investigacao"><div class="skill-top"><div><span class="skill-name">Prontidão</span><span class="skill-en">Alertness</span></div><span class="skill-base">20%</span></div><p>Perceber perigo imediato, movimento, som, emboscada ou algo fora do lugar sem procurar deliberadamente.</p><span class="skill-group">Investigação</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">Antropologia</span><span class="skill-en">Anthropology</span></div><span class="skill-base">0%</span></div><p>Interpretar culturas, costumes, estruturas sociais, rituais humanos e comportamento cultural.</p><span class="skill-group">Acadêmica</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">Arqueologia</span><span class="skill-en">Archeology</span></div><span class="skill-base">0%</span></div><p>Analisar sítios, escavações, artefatos, datação e contextos de civilizações antigas.</p><span class="skill-group">Acadêmica</span></article>
+        <article class="skill-card" data-category="tecnica"><div class="skill-top"><div><span class="skill-name">Arte</span><span class="skill-en">Art</span></div><span class="skill-base">0%</span></div><p>Uma disciplina específica: música, fotografia, escrita, pintura, atuação etc. Cada disciplina é uma perícia própria.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="combate"><div class="skill-top"><div><span class="skill-name">Artilharia</span><span class="skill-en">Artillery</span></div><span class="skill-base">0%</span></div><p>Operar morteiros, canhões e armas de fogo indireto que exigem cálculo, equipe e doutrina.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="fisica"><div class="skill-top"><div><span class="skill-name">Atletismo</span><span class="skill-en">Athletics</span></div><span class="skill-base">30%</span></div><p>Correr, saltar, escalar, arremessar, perseguir, atravessar obstáculos e executar esforço físico treinado.</p><span class="skill-group">Física</span></article>
+        <article class="skill-card" data-category="tecnica social investigacao"><div class="skill-top"><div><span class="skill-name">Burocracia</span><span class="skill-en">Bureaucracy</span></div><span class="skill-base">10%</span></div><p>Navegar instituições, encontrar registros, acelerar processos, conseguir formulários, autorização ou acesso.</p><span class="skill-group">Institucional</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">Ciência da Computação</span><span class="skill-en">Computer Science</span></div><span class="skill-base">0%</span></div><p>Programação, segurança, análise de software, redes, invasão e recuperação técnica de dados.</p><span class="skill-group">Técnica</span></article>
+        <article class="skill-card" data-category="tecnica"><div class="skill-top"><div><span class="skill-name">Ofício</span><span class="skill-en">Craft</span></div><span class="skill-base">0%</span></div><p>Um ofício específico, como eletrônica, mecânica, armeiro, carpintaria ou chaveiro. Cada área é separada.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="investigacao"><div class="skill-top"><div><span class="skill-name">Criminologia</span><span class="skill-en">Criminology</span></div><span class="skill-base">10%</span></div><p>Reconhecer métodos criminosos, padrões de delito, procedimentos policiais e comportamento de infratores.</p><span class="skill-group">Investigação</span></article>
+        <article class="skill-card" data-category="combate tecnica"><div class="skill-top"><div><span class="skill-name">Demolição</span><span class="skill-en">Demolitions</span></div><span class="skill-base">0%</span></div><p>Identificar, preparar, posicionar e desarmar explosivos; estimar carga e efeito estrutural.</p><span class="skill-group">Combate técnico</span></article>
+        <article class="skill-card" data-category="social investigacao"><div class="skill-top"><div><span class="skill-name">Disfarce</span><span class="skill-en">Disguise</span></div><span class="skill-base">10%</span></div><p>Alterar aparência, postura e apresentação para parecer outra pessoa ou pertencer a outro contexto.</p><span class="skill-group">Social</span></article>
+        <article class="skill-card" data-category="combate fisica"><div class="skill-top"><div><span class="skill-name">Esquiva</span><span class="skill-en">Dodge</span></div><span class="skill-base">30%</span></div><p>Evitar ataques corpo a corpo e mergulhar para cobertura contra ataques à distância.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="fisica"><div class="skill-top"><div><span class="skill-name">Dirigir</span><span class="skill-en">Drive</span></div><span class="skill-base">20%</span></div><p>Controlar veículos terrestres comuns em perseguições, manobras perigosas ou condições adversas.</p><span class="skill-group">Campo</span></article>
+        <article class="skill-card" data-category="combate"><div class="skill-top"><div><span class="skill-name">Armas de Fogo</span><span class="skill-en">Firearms</span></div><span class="skill-base">20%</span></div><p>Usar pistolas, revólveres, rifles, espingardas e outras armas portáteis convencionais.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="tecnica fisica"><div class="skill-top"><div><span class="skill-name">Primeiros Socorros</span><span class="skill-en">First Aid</span></div><span class="skill-base">10%</span></div><p>Tratamento imediato, controle de sangramento e estabilização emergencial. Pode restaurar 1D4 HP uma vez por ferimento.</p><span class="skill-group">Médica</span></article>
+        <article class="skill-card" data-category="investigacao tecnica"><div class="skill-top"><div><span class="skill-name">Forense</span><span class="skill-en">Forensics</span></div><span class="skill-base">0%</span></div><p>Analisar cena, sangue, digitais, balística, resíduos, DNA e outras evidências científicas.</p><span class="skill-group">Investigação</span></article>
+        <article class="skill-card" data-category="tecnica social"><div class="skill-top"><div><span class="skill-name">Língua Estrangeira</span><span class="skill-en">Foreign Language</span></div><span class="skill-base">0%</span></div><p>Cada idioma adicional é separado. O idioma nativo geralmente não exige rolagem em situações comuns.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="tecnica fisica"><div class="skill-top"><div><span class="skill-name">Maquinário Pesado</span><span class="skill-en">Heavy Machinery</span></div><span class="skill-base">10%</span></div><p>Operar equipamentos industriais, escavadeiras, guindastes, geradores e máquinas de grande porte.</p><span class="skill-group">Técnica</span></article>
+        <article class="skill-card" data-category="combate"><div class="skill-top"><div><span class="skill-name">Armas Pesadas</span><span class="skill-en">Heavy Weapons</span></div><span class="skill-base">0%</span></div><p>Metralhadoras pesadas, lança-granadas, lança-foguetes e armamentos que normalmente usam Lethality.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">História</span><span class="skill-en">History</span></div><span class="skill-base">10%</span></div><p>Conhecer eventos, pessoas, movimentos, documentos e contextos históricos.</p><span class="skill-group">Acadêmica</span></article>
+        <article class="skill-card" data-category="social investigacao"><div class="skill-top"><div><span class="skill-name">HUMINT</span><span class="skill-en">Human Intelligence</span></div><span class="skill-base">10%</span></div><p>Ler comportamento, emoção, intenção, hesitação e sinais de informação escondida. Não é detector automático de mentira.</p><span class="skill-group">Investigação social</span></article>
+        <article class="skill-card" data-category="tecnica social"><div class="skill-top"><div><span class="skill-name">Lei</span><span class="skill-en">Law</span></div><span class="skill-base">0%</span></div><p>Legislação, mandados, jurisdição, direitos, procedimentos judiciais e limites de autoridade.</p><span class="skill-group">Institucional</span></article>
+        <article class="skill-card" data-category="tecnica"><div class="skill-top"><div><span class="skill-name">Medicina</span><span class="skill-en">Medicine</span></div><span class="skill-base">0%</span></div><p>Diagnóstico, tratamento clínico e recuperação prolongada. Restaura 1D4 HP uma vez por semana quando apropriado.</p><span class="skill-group">Médica</span></article>
+        <article class="skill-card" data-category="combate"><div class="skill-top"><div><span class="skill-name">Armas Corpo a Corpo</span><span class="skill-en">Melee Weapons</span></div><span class="skill-base">30%</span></div><p>Usar facas, bastões, machados, espadas e objetos empunhados em combate próximo.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="combate tecnica"><div class="skill-top"><div><span class="skill-name">Ciência Militar</span><span class="skill-en">Military Science</span></div><span class="skill-base">0%</span></div><p>Doutrina e planejamento de uma área específica: terrestre, aérea, naval ou outra especialização.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="fisica investigacao"><div class="skill-top"><div><span class="skill-name">Navegar</span><span class="skill-en">Navigate</span></div><span class="skill-base">10%</span></div><p>Orientação, mapas, rotas, coordenadas e localização em campo, mar ou ambiente urbano.</p><span class="skill-group">Campo</span></article>
+        <article class="skill-card" data-category="investigacao unnatural"><div class="skill-top"><div><span class="skill-name">Ocultismo</span><span class="skill-en">Occult</span></div><span class="skill-base">10%</span></div><p>Conhecer crenças esotéricas humanas, simbolismo, folclore, magia alegada e história de cultos.</p><span class="skill-group">Oculto humano</span></article>
+        <article class="skill-card" data-category="social"><div class="skill-top"><div><span class="skill-name">Persuadir</span><span class="skill-en">Persuade</span></div><span class="skill-base">20%</span></div><p>Convencer, negociar, intimidar, enganar ou influenciar dentro do que a pessoa poderia plausivelmente aceitar.</p><span class="skill-group">Social</span></article>
+        <article class="skill-card" data-category="tecnica"><div class="skill-top"><div><span class="skill-name">Farmácia</span><span class="skill-en">Pharmacy</span></div><span class="skill-base">0%</span></div><p>Medicamentos, dosagens, venenos, drogas, interações e identificação de substâncias.</p><span class="skill-group">Médica</span></article>
+        <article class="skill-card" data-category="fisica tecnica"><div class="skill-top"><div><span class="skill-name">Pilotar</span><span class="skill-en">Pilot</span></div><span class="skill-base">0%</span></div><p>Controlar uma categoria específica de aeronave ou embarcação. Cada tipo é uma especialização.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="social tecnica"><div class="skill-top"><div><span class="skill-name">Psicoterapia</span><span class="skill-en">Psychotherapy</span></div><span class="skill-base">10%</span></div><p>Tratamento psicológico prolongado, diagnóstico de transtornos e recuperação de SAN entre operações.</p><span class="skill-group">Médica social</span></article>
+        <article class="skill-card" data-category="fisica"><div class="skill-top"><div><span class="skill-name">Montaria</span><span class="skill-en">Ride</span></div><span class="skill-base">10%</span></div><p>Cavalgar, controlar e cuidar de animais de montaria em condições difíceis.</p><span class="skill-group">Campo</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">Ciência</span><span class="skill-en">Science</span></div><span class="skill-base">0%</span></div><p>Uma ciência específica: Biologia, Química, Física, Matemática, Astronomia etc. Cada disciplina é separada.</p><span class="skill-group">Especializada</span></article>
+        <article class="skill-card" data-category="investigacao"><div class="skill-top"><div><span class="skill-name">Procurar</span><span class="skill-en">Search</span></div><span class="skill-base">20%</span></div><p>Examinar deliberadamente um local, corpo, documento ou objeto em busca de pistas, esconderijos e detalhes.</p><span class="skill-group">Investigação</span></article>
+        <article class="skill-card" data-category="tecnica investigacao"><div class="skill-top"><div><span class="skill-name">SIGINT</span><span class="skill-en">Signals Intelligence</span></div><span class="skill-base">0%</span></div><p>Interceptar, localizar, analisar e proteger rádio, telefonia, transmissão e outros sinais eletrônicos.</p><span class="skill-group">Inteligência técnica</span></article>
+        <article class="skill-card" data-category="fisica investigacao"><div class="skill-top"><div><span class="skill-name">Furtividade</span><span class="skill-en">Stealth</span></div><span class="skill-base">10%</span></div><p>Mover-se, esconder-se e agir sem ser visto ou ouvido; frequentemente oposta por Prontidão.</p><span class="skill-group">Campo</span></article>
+        <article class="skill-card" data-category="tecnica"><div class="skill-top"><div><span class="skill-name">Cirurgia</span><span class="skill-en">Surgery</span></div><span class="skill-base">0%</span></div><p>Procedimentos invasivos, operações e tratamento de danos que exigem ambiente e treinamento cirúrgico.</p><span class="skill-group">Médica</span></article>
+        <article class="skill-card" data-category="fisica"><div class="skill-top"><div><span class="skill-name">Sobrevivência</span><span class="skill-en">Survival</span></div><span class="skill-base">10%</span></div><p>Abrigo, água, alimento, rastreamento e permanência em ambiente hostil.</p><span class="skill-group">Campo</span></article>
+        <article class="skill-card" data-category="fisica"><div class="skill-top"><div><span class="skill-name">Nadar</span><span class="skill-en">Swim</span></div><span class="skill-base">20%</span></div><p>Natação, mergulho, resgate e deslocamento em água sob pressão ou perigo.</p><span class="skill-group">Física</span></article>
+        <article class="skill-card" data-category="combate"><div class="skill-top"><div><span class="skill-name">Combate Desarmado</span><span class="skill-en">Unarmed Combat</span></div><span class="skill-base">40%</span></div><p>Socos, chutes, agarrões, desarme, pin e outras manobras corporais.</p><span class="skill-group">Combate</span></article>
+        <article class="skill-card" data-category="unnatural investigacao"><div class="skill-top"><div><span class="skill-name">Unnatural / Sobrenatural</span><span class="skill-en">Unnatural</span></div><span class="skill-base">0%</span></div><p>Conhecimento verdadeiro sobre forças que contradizem a realidade humana. Aumenta por exposição e estudo, não por treinamento comum.</p><span class="skill-group">Unnatural</span></article>
+      </div>
+      <div id="skillNoResults" class="no-results">Nenhuma perícia corresponde ao filtro.</div>
+
+      <h3>Diferenças que evitam confusão</h3>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Prontidão × Procurar</div><p><strong>Prontidão</strong> percebe risco imediato ou algo que chama atenção. <strong>Procurar</strong> é uma busca deliberada e metódica.</p></div>
+        <div class="card"><div class="card-title">Ocultismo × Unnatural</div><p><strong>Ocultismo</strong> sabe o que humanos acreditam. <strong>Unnatural</strong> reconhece verdades impossíveis que podem destruir a mente.</p></div>
+        <div class="card"><div class="card-title">Primeiros Socorros × Medicina × Cirurgia</div><p><strong>Primeiros Socorros</strong> é imediato; <strong>Medicina</strong> diagnostica e acompanha; <strong>Cirurgia</strong> realiza procedimentos invasivos.</p></div>
+        <div class="card"><div class="card-title">HUMINT × Persuadir</div><p><strong>HUMINT</strong> interpreta pessoas; <strong>Persuadir</strong> tenta mudar o comportamento delas. Nenhuma das duas é controle mental.</p></div>
+      </div>
+    </section>
+
+    <section class="rule-section searchable" id="combate" data-search="combate iniciativa dex turno ação aim ataque called shot disarm dodge escape fight back move pin wait defesa cobertura arma de fogo corpo a corpo movimento">
+      <div class="section-head">
+        <div><div class="section-number">04 // Violência</div><h2>Combate</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <div class="notice danger"><strong>Combate não é balanceado.</strong> Um único tiro, explosão ou golpe do Unnatural pode retirar um Agente da campanha. Informação, surpresa, cobertura e fuga são recursos táticos reais.</div>
+
+      <h3>Turnos e iniciativa</h3>
+      <p>Cada turno representa alguns segundos. Todos agem uma vez, em ordem decrescente de <strong>DEX</strong>. Em seu turno, escolha <strong>uma ação</strong>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ação</th><th>Regra resumida</th></tr></thead>
+          <tbody>
+            <tr><td>Mirar — Aim</td><td>Receba <code>+20%</code> no próximo ataque.</td></tr>
+            <tr><td>Atacar — Attack</td><td>Um teste e um dano podem representar vários golpes ou dois/três disparos rápidos.</td></tr>
+            <tr><td>Tiro direcionado — Called Shot</td><td>Ignora cobertura ou armadura relevante com <code>−20%</code>, ou <code>−40%</code> para um alvo especialmente difícil.</td></tr>
+            <tr><td>Desarmar — Disarm</td><td>Role Combate Desarmado para fazer o alvo soltar arma ou objeto. Também pode ser escolhido ao contra-atacar.</td></tr>
+            <tr><td>Esquivar — Dodge</td><td>Oponha Esquiva a ataques, desarme ou pin. Contra tiros, exige cobertura a cerca de 3 m.</td></tr>
+            <tr><td>Escapar — Escape</td><td>Use o melhor entre <code>STR×5</code> e Combate Desarmado contra quem está mantendo o pin.</td></tr>
+            <tr><td>Contra-atacar — Fight Back</td><td>Use Armas Corpo a Corpo ou Combate Desarmado; se vencer, bloqueia e aplica uma ação ofensiva em um alvo.</td></tr>
+            <tr><td>Mover — Move</td><td>Cerca de 3 m junto de outra ação; como ação: trotar 10 m, correr 20 m ou sprintar 30 m.</td></tr>
+            <tr><td>Imobilizar — Pin</td><td>Prende o alvo. Ele só pode tentar escapar; ataques corpo a corpo contra ele recebem <code>+20%</code>.</td></tr>
+            <tr><td>Esperar — Wait</td><td>Adia sua ação para agir depois de outra ação naquele turno.</td></tr>
+            <tr><td>Qualquer outra coisa</td><td>Recarregar, abrir porta, usar equipamento, levantar, aplicar Primeiros Socorros etc.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Defesas</h3>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Esquiva</div><p>Pode ser declarada antes da ordem de DEX, mas consome a ação daquele turno. O teste se opõe a todos os ataques corpo a corpo e, se houver cobertura a até cerca de 3 m, permite mergulhar para ela contra ataques à distância. Não causa dano.</p></div>
+        <div class="card"><div class="card-title">Ataque / Fight Back</div><p>Um teste de combate corpo a corpo também se opõe aos ataques corpo a corpo recebidos naquele turno. Ao escolher Fight Back e vencer, selecione ataque, Called Shot, desarme ou pin contra um único atacante.</p></div>
+      </div>
+      <p>Para se defender, o Agente precisa perceber o ataque e ser fisicamente capaz de reagir. Quem já usou outra ação, está inconsciente, preso ou completamente desprevenido não pode se defender.</p>
+
+      <details>
+        <summary>Pin, escape e controle corporal</summary>
+        <div class="details-body">
+          <p>Um alvo preso não realiza ações normais. Para escapar, usa o melhor entre <code>STR×5</code> e Combate Desarmado, oposto pelo melhor valor do personagem que o segura. Se a fuga vence, o pin termina. Enquanto preso, ataques de Combate Desarmado ou Armas Corpo a Corpo contra o alvo recebem <code>+20%</code>.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Ataques à distância e cobertura</summary>
+        <div class="details-body">
+          <p>Armas de Fogo resolve pistolas, rifles e espingardas; Armas Pesadas e Artilharia cobrem armamentos maiores. A distância, visibilidade, movimento e tamanho do alvo podem gerar <code>±20%</code> ou <code>±40%</code>. Cobertura é muito mais importante do que tentar “desviar da bala”.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Críticos e fumbles em combate</summary>
+        <div class="details-body">
+          <p>Em ataques de dano comum, um crítico normalmente dobra os dados de dano. Em um fumble, o Handler aplica uma complicação plausível: queda, arma travada, perda de posição, munição desperdiçada ou exposição. Um fumble não precisa atingir automaticamente um aliado.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="rule-section searchable" id="dano" data-search="dano hp morte 2 hp zero primeiros socorros medicina cirurgia cura lethality kill radius supressão armadura cobertura armor piercing força">
+      <div class="section-head">
+        <div><div class="section-number">05 // Trauma físico</div><h2>Dano, armadura e morte</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <h3>HP e ferimentos críticos</h3>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">3 HP ou mais</div><p>O Agente permanece consciente, embora ferimentos possam impor consequências narrativas.</p></div>
+        <div class="card"><div class="card-title">2 HP ou menos</div><p>Cai inconsciente por cerca de uma hora ou até ser curado para pelo menos 3 HP. Faça um teste de CON.</p></div>
+        <div class="card"><div class="card-title">0 HP</div><p>Morre, salvo se o Handler considerar que atendimento imediato ainda pode salvá-lo. HP nunca fica negativo.</p></div>
+      </div>
+      <div class="notice danger"><strong>Falha no teste de CON com 2 HP ou menos:</strong> use o menor dado da rolagem percentual como um D10. O Handler reduz permanentemente um atributo por esse valor, até o mínimo de 3.</div>
+
+      <h3>Cura</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Método</th><th>Recuperação</th><th>Limite</th></tr></thead>
+          <tbody>
+            <tr><td>Primeiros Socorros</td><td><code>1D4 HP</code></td><td>Uma tentativa por novo conjunto de ferimentos.</td></tr>
+            <tr><td>Descanso seguro</td><td><code>1 HP</code></td><td>Um teste de CON por dia.</td></tr>
+            <tr><td>Medicina ou Cirurgia</td><td><code>1D4 HP</code></td><td>Uma vez por semana, conforme o tratamento adequado.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Dano comum e Força</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Ameaça</th><th>Dano de referência</th><th>Modificador de STR no corpo a corpo</th></tr></thead>
+          <tbody>
+            <tr><td>Desarmado</td><td><code>1D4−1</code></td><td rowspan="6"><code>STR 3–4: −2</code><br><code>STR 5–8: −1</code><br><code>STR 9–12: +0</code><br><code>STR 13–16: +1</code><br><code>STR 17–18: +2</code></td></tr>
+            <tr><td>Clava ou faca pequena</td><td><code>1D4</code></td></tr>
+            <tr><td>Clava ou faca grande</td><td><code>1D6</code></td></tr>
+            <tr><td>Pistola</td><td><code>1D10</code></td></tr>
+            <tr><td>Rifle</td><td><code>1D12</code></td></tr>
+            <tr><td>Espingarda</td><td><code>2D10</code> perto; <code>2D6</code> ou <code>1D6</code> longe</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>O modificador de STR se aplica a dano de Combate Desarmado e Armas Corpo a Corpo, até um mínimo de zero.</p>
+
+      <h3>Lethality</h3>
+      <div class="card">
+        <ol>
+          <li>Após o ataque acertar, role <code>1D100</code> contra a porcentagem de Lethality.</li>
+          <li>Se passar, o alvo é reduzido imediatamente a <strong>0 HP</strong>.</li>
+          <li>Se falhar, some os dois dados percentuais como D10s e aplique o total como dano. Em cada dado, o número 0 vale 10.</li>
+        </ol>
+        <p><strong>Exemplo:</strong> Lethality 15% e resultado 47: a rolagem não mata automaticamente e causa <code>4 + 7 = 11 HP</code>.</p>
+      </div>
+
+      <h3>Kill Radius e supressão</h3>
+      <ul>
+        <li>Explosivos recebem normalmente <code>+20%</code> para atingir uma área.</li>
+        <li>Em acerto, todos dentro do raio testam Lethality; sobreviventes ficam suprimidos.</li>
+        <li>Em falha, quem estaria no raio não sofre Lethality, mas fica suprimido.</li>
+        <li>Suprimido: vá para cobertura ou fique no chão. Recusar custa <code>1 SAN</code>, mas permite agir normalmente.</li>
+      </ul>
+
+      <h3>Armadura, cobertura e perfuração</h3>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">Armadura corporal</div><p>Reduz dano comum pelo seu valor. Não reduz um sucesso de Lethality e pode ser ignorada por Called Shot.</p></div>
+        <div class="card"><div class="card-title">Cobertura</div><p>Faz Lethality falhar automaticamente e reduz o dano resultante. Não protege contra um Called Shot que consiga contorná-la.</p></div>
+        <div class="card"><div class="card-title">Armor Piercing</div><p>Reduz o valor de proteção apenas para aquele ataque. AP 3 contra armadura 5 deixa proteção efetiva 2.</p></div>
+      </div>
+    </section>
+
+    <section class="rule-section searchable" id="sanidade" data-search="sanidade SAN violência desamparo helplessness unnatural temporária breaking point transtorno disorder episódio agudo adaptação permanente zero">
+      <div class="section-head">
+        <div><div class="section-number">06 // Trauma mental</div><h2>Sanidade e transtornos</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <h3>Teste de SAN</h3>
+      <p>Role <code>1D100 ≤ SAN atual</code>. Cada ameaça indica duas perdas no formato <code>sucesso/falha</code>, como <code>0/1D6</code> ou <code>1/1D10</code>.</p>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Sucesso</div><p>Sofra a perda menor. Em crítico, sofra o mínimo possível dessa perda.</p></div>
+        <div class="card"><div class="card-title">Falha</div><p>Sofra a perda maior. Em fumble, sofra o máximo possível dessa perda.</p></div>
+      </div>
+
+      <h3>As três fontes</h3>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">Violência</div><p>Sofrer ou infligir brutalidade: ser baleado, matar, torturar, encontrar mutilação ou chegar a 2 HP.</p></div>
+        <div class="card"><div class="card-title">Desamparo</div><p>Perda de controle: prisão, fracasso inevitável, isolamento, perda de um Bond ou incapacidade de salvar alguém.</p></div>
+        <div class="card"><div class="card-title">Unnatural</div><p>Contato com fenômenos, entidades e verdades que contradizem a compreensão humana.</p></div>
+      </div>
+
+      <h3>Formas de insanidade</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Estado</th><th>Gatilho</th><th>Efeito</th></tr></thead>
+          <tbody>
+            <tr><td>Insanidade temporária</td><td>Perder <code>5 ou mais SAN</code> em um único evento.</td><td>Fight, flight ou freeze: fugir, atacar irracionalmente ou se fechar. Dura até alguns minutos após o perigo cessar.</td></tr>
+            <tr><td>Transtorno</td><td>SAN atual alcança ou cruza o Breaking Point.</td><td>Ganhe um transtorno ligado à fonte do trauma e recalcule <code>BP = SAN atual − POW</code>.</td></tr>
+            <tr><td>Episódio agudo</td><td>Depois de ter transtorno, perder SAN ou enfrentar gatilho relacionado e falhar em SAN.</td><td>Os sintomas dominam até a fonte de estresse desaparecer; o Handler define a manifestação.</td></tr>
+            <tr><td>Insanidade permanente</td><td>SAN chega a <code>0</code>.</td><td>O Agente se torna NPC do Handler; o jogador cria outro personagem.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Limites e recuperação</h3>
+      <ul>
+        <li>Terapia não eleva SAN acima de <code>POW × 5</code>.</li>
+        <li>Superar ameaças do Unnatural pode elevar SAN até <code>99 − Unnatural</code>.</li>
+        <li>A perícia Unnatural reduz permanentemente o teto máximo de SAN.</li>
+      </ul>
+    </section>
+
+    <section class="rule-section searchable" id="bonds" data-search="bonds vínculos projeção trauma reduzir san repressão sintomas adaptação violência desamparo willpower wp exaustão motivação delta green team bond">
+      <div class="section-head">
+        <div><div class="section-number">07 // Vida normal</div><h2>Bonds, projeção e Willpower</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <h3>Bonds</h3>
+      <p>Um Bond é uma relação real e específica: cônjuge, filho, melhor amigo, parceiro de trabalho, terapeuta, igreja, unidade ou grupo de sobreviventes. Cada Bond começa igual ao CHA; se o CHA cair, os Bonds caem na mesma quantidade.</p>
+
+      <h3>Projetar perda de SAN</h3>
+      <div class="card">
+        <ol>
+          <li>Depois de determinar uma perda de SAN, role <code>1D4</code> e gaste essa quantidade de WP.</li>
+          <li>A projeção só funciona se o Agente continuar com pelo menos <code>1 WP</code>.</li>
+          <li>Reduza a perda de SAN pelo mesmo valor, até zero.</li>
+          <li>Reduza um Bond pelo mesmo valor e descreva depois como a relação foi ferida.</li>
+        </ol>
+      </div>
+
+      <h3>Reprimir sintomas</h3>
+      <p>Durante insanidade temporária ou episódio agudo, gaste <code>1D4 WP</code>, reduza um Bond pela mesma quantidade e faça um teste de SAN. Em sucesso, o Agente mantém o controle; a relação ainda sofre o dano.</p>
+
+      <h3>Adaptação</h3>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">Como marcar</div><p>Ao perder SAN por Violência ou Desamparo sem enlouquecer, marque uma caixa. Se enlouquecer ou atingir BP por essa fonte, apague todas as marcas dela.</p></div>
+        <div class="card"><div class="card-title">Três marcas</div><p>O Agente fica adaptado: testes de SAN daquela categoria passam automaticamente.</p></div>
+        <div class="card"><div class="card-title">Unnatural</div><p>Ninguém se adapta ao Unnatural.</p></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Adaptação</th><th>Preço permanente</th><th>Benefício</th></tr></thead>
+          <tbody>
+            <tr><td>Violência</td><td>Perde <code>1D6 CHA</code> e o mesmo valor de cada Bond.</td><td>Testes de SAN por Violência passam; ignora a perda de 1 SAN ao desafiar supressão.</td></tr>
+            <tr><td>Desamparo</td><td>Perde <code>1D6 POW</code>.</td><td>Testes de SAN por Desamparo passam automaticamente.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Willpower</h3>
+      <div class="grid-3">
+        <div class="card"><div class="card-title">3 WP ou mais</div><p>Sem penalidade geral.</p></div>
+        <div class="card"><div class="card-title">1–2 WP</div><p>Colapso emocional: <code>−20%</code> em todas as ações.</p></div>
+        <div class="card"><div class="card-title">0 WP</div><p>Incapacitado; não pode obter sucesso em testes, inclusive SAN.</p></div>
+      </div>
+      <p>Uma noite completa de sono recupera <code>1D6 WP</code>. Cumprir uma motivação de forma significativa recupera <code>1 WP</code>.</p>
+
+      <h3>Exaustão</h3>
+      <div class="notice warning">Depois de falhar em descansar após insanidade/BP ou trabalhar por um número de horas igual à CON sem pausa, perca <code>1D6 WP</code> e fique exausto: <code>−20%</code> em perícias, atributos e testes de SAN. Uma noite completa remove a penalidade.</div>
+
+      <details>
+        <summary>Formar Bonds com a equipe Delta Green</summary>
+        <div class="details-body">
+          <p>Quando um companheiro sofre trauma catastrófico, faça SAN. Em falha, pode surgir um Bond “Delta Green”:</p>
+          <ul>
+            <li>Sem Bond existente: crie um igual à metade do CHA e reduza outro Bond normal em <code>1D4</code>.</li>
+            <li>Com Bond existente: aumente-o em <code>1D4</code>, até CHA, e reduza outro Bond normal em 1.</li>
+          </ul>
+          <p>A equipe gradualmente substitui a vida civil — o que é útil operacionalmente e destrutivo pessoalmente.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="rule-section searchable" id="home" data-search="home personal pursuit cumprir responsabilidades terapia mentir verdade melhorar perícia atributo estudar unnatural bond san">
+      <div class="section-head">
+        <div><div class="section-number">08 // Entre operações</div><h2>Cenas de Home</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <p>Home mostra o que acontece quando o Agente volta para emprego, família e rotina. Normalmente cada personagem escolhe uma <strong>Personal Pursuit</strong>.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Personal Pursuit</th><th>Teste e efeito</th><th>Custo</th></tr></thead>
+          <tbody>
+            <tr><td>Cumprir responsabilidades</td><td>Teste de SAN. Sucesso: <code>+1D6</code> em um Bond. Fumble: <code>−1D4</code> no Bond e <code>−1 SAN</code>.</td><td>Tempo e atenção pessoal.</td></tr>
+            <tr><td>Terapia, mentindo sobre o Unnatural</td><td>Teste de Sorte. Sucesso: <code>+1D4 SAN</code>. Fumble: <code>−1 SAN</code>.</td><td>Reduza um Bond em 1.</td></tr>
+            <tr><td>Terapia, contando a verdade</td><td>Sorte, possivelmente com <code>−20%</code>. Sucesso: <code>+1D6 SAN</code>. Fumble: <code>−1 SAN</code>. O terapeuta pode sofrer SAN.</td><td>Reduza um Bond em 1 e crie risco de segurança.</td></tr>
+            <tr><td>Melhorar atributo ou perícia</td><td>Teste o valor. Se falhar: <code>+1D10</code> na perícia ou <code>+1</code> no atributo.</td><td>Reduza um Bond em 1, passe ou falhe.</td></tr>
+            <tr><td>Estudar o Unnatural</td><td>O Handler determina conhecimento, SAN, Unnatural e outras consequências.</td><td>Reduza um Bond em <code>1D4</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice info"><strong>Ideia da fase:</strong> sobreviver a uma operação não significa voltar ao normal. Toda recuperação compete com trabalho, segredo, obsessão e relações.</div>
+    </section>
+
+    <section class="rule-section searchable" id="equipamento" data-search="equipamento armas ficha alcance dano armor piercing lethality kill radius dinheiro gastos requisição autoridade legalidade recursos">
+      <div class="section-head">
+        <div><div class="section-number">09 // Recursos</div><h2>Equipamento, dinheiro e acesso</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <p>O Handler pode presumir que o Agente possui ferramentas normais de sua profissão. Itens importantes devem ser registrados, especialmente armas, armadura, evidências, equipamentos restritos e objetos que deixem rastros.</p>
+
+      <h3>Campos de uma arma</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Campo</th><th>Significado</th></tr></thead>
+          <tbody>
+            <tr><td>Skill %</td><td>Perícia usada pelo Agente.</td></tr>
+            <tr><td>Base Range</td><td>Distância na qual a arma funciona sem penalidade de alcance.</td></tr>
+            <tr><td>Damage</td><td>Dano em HP quando não usa Lethality.</td></tr>
+            <tr><td>Armor Piercing</td><td>Quanto reduz a proteção do alvo.</td></tr>
+            <tr><td>Lethality</td><td>Chance percentual de reduzir o alvo a 0 HP.</td></tr>
+            <tr><td>Kill Radius</td><td>Raio no qual cada alvo sofre Lethality.</td></tr>
+            <tr><td>Ammo</td><td>Capacidade; recarregar normalmente consome uma ação.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Comprar</div><p>Não é necessário contabilizar cada gasto cotidiano. O que importa é se o item está ao alcance financeiro, é legal, está disponível e chama atenção.</p></div>
+        <div class="card"><div class="card-title">Requisitar</div><p>Burocracia, autoridade, contatos ou uma justificativa podem liberar recursos institucionais. Quase toda requisição deixa registro e exige explicação posterior.</p></div>
+      </div>
+      <div class="notice warning"><strong>Pergunta operacional:</strong> “Você consegue obter isso?” é diferente de “como explicará que obteve e usou isso?”.</div>
+    </section>
+
+    <section class="rule-section searchable" id="situacoes" data-search="situações especiais pursuit perseguição special training treinamento especial veneno doença pesquisa tarefa demorada informação pistas ocultismo supernatural ritual">
+      <div class="section-head">
+        <div><div class="section-number">10 // Casos especiais</div><h2>Perseguições, treinamento e pesquisa</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Perseguição curta</div><p>Um teste oposto: Dirigir, Atletismo, Nadar, Pilotar ou o que fizer sentido.</p></div>
+        <div class="card"><div class="card-title">Perseguição longa</div><p>Geralmente duas vitórias. Vitórias se cancelam; crítico vale duas, fumble vale duas derrotas. Use três apenas para perseguição muito longa.</p></div>
+      </div>
+
+      <h3>Special Training</h3>
+      <p>Treinamento especial permite usar um atributo ou perícia existente para uma atividade específica que não merece uma perícia completa. Exemplos: arrombar fechadura com DEX, paraquedismo com Atletismo, SCUBA com Nadar. Ele não concede uma competência genérica.</p>
+
+      <h3>Pesquisa e pistas</h3>
+      <div class="notice"><strong>Pistas essenciais não devem depender de uma única rolagem.</strong> Se o Agente tem a perícia adequada, procura no lugar certo e dispõe de tempo, entregue o núcleo da informação. A rolagem decide rapidez, profundidade, detalhes extras, rastros deixados ou complicações.</div>
+
+      <h3>Veneno, doença e ambiente</h3>
+      <p>Cada ameaça define rota de exposição, tempo para agir, penalidade no teste de CON, dano ou Lethality, sintomas e cura. Não existe uma rolagem única universal; siga a ficha da ameaça.</p>
+
+      <h3>Rituais e Unnatural</h3>
+      <p>Não existe uma perícia genérica de “conjurar magia”. Cada ritual estabelece estudo, componentes, tempo, ativação e custos de WP, SAN ou POW. Ocultismo pode reconhecer tradições humanas; Unnatural pode reconhecer a verdade — e essa verdade cobra um preço.</p>
+    </section>
+
+    <section class="rule-section searchable" id="handler" data-search="handler mestre quando rolar pistas falhar para frente npc operação suspense consequências improviso segurança mesa">
+      <div class="section-head">
+        <div><div class="section-number">11 // Controle</div><h2>Protocolo do Handler</h2></div>
+        <div class="audience"><span class="tag handler">Handler</span><span class="tag player">Transparente</span></div>
+      </div>
+      <p>Esta seção não contém segredos de cenário; são princípios de arbitragem que ajudam todos a entender como a mesa deve funcionar.</p>
+
+      <h3>Antes de pedir um teste</h3>
+      <div class="grid-4">
+        <div class="card"><div class="card-title">1. É possível?</div><p>Uma rolagem não transforma absurdo em possibilidade.</p></div>
+        <div class="card"><div class="card-title">2. Há incerteza?</div><p>Se o resultado é óbvio, apenas narre.</p></div>
+        <div class="card"><div class="card-title">3. Há pressão?</div><p>Tempo, perigo, segredo, oposição ou recurso limitado.</p></div>
+        <div class="card"><div class="card-title">4. Falhar importa?</div><p>Se nada muda, não há motivo para rolar.</p></div>
+      </div>
+
+      <h3>Falhas devem mover a história</h3>
+      <div class="grid-2">
+        <div class="card"><div class="card-title">Evite</div><p>“Você falhou e não encontra nada.” Isso paralisa a investigação.</p></div>
+        <div class="card"><div class="card-title">Prefira</div><p>“Você encontra, mas demora; deixa rastros; recebe informação incompleta; ou o inimigo age primeiro.”</p></div>
+      </div>
+
+      <h3>NPCs simples</h3>
+      <p>Para a maioria dos NPCs, anote apenas atributos relevantes, HP/WP se necessário, duas a quatro perícias, arma, motivação, informação conhecida e o que querem esconder. Fichas completas são reservadas para figuras recorrentes.</p>
+
+      <h3>Operação funcional</h3>
+      <ol>
+        <li>Incidente que chama atenção.</li>
+        <li>Briefing, cobertura, objetivo e recursos.</li>
+        <li>Rede de pistas e testemunhas.</li>
+        <li>Contradição que revela que o caso não é normal.</li>
+        <li>Escalada ativa da ameaça.</li>
+        <li>Confronto, contenção, destruição ou fuga.</li>
+        <li>Encobrimento, consequências e Home.</li>
+      </ol>
+
+      <div class="notice warning"><strong>Neutralidade hostil:</strong> o Handler não deve salvar Agentes de toda consequência nem tentar derrotar os jogadores. Ele representa um mundo perigoso de forma consistente, preservando esperança suficiente para que escolhas e riscos ainda importem.</div>
+    </section>
+
+    <section class="rule-section searchable" id="consulta" data-search="consulta rápida cheat sheet resumo fórmula regras rápidas">
+      <div class="section-head">
+        <div><div class="section-number">12 // Cheat sheet</div><h2>Consulta rápida</h2></div>
+        <div class="audience"><span class="tag player">Jogador</span><span class="tag handler">Handler</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Situação</th><th>Regra</th></tr></thead>
+          <tbody>
+            <tr><td>Teste normal</td><td><code>1D100 ≤ perícia</code> ou <code>atributo × 5</code></td></tr>
+            <tr><td>Crítico / fumble</td><td><code>01</code> ou dígitos iguais dentro do sucesso / <code>100</code> ou iguais dentro da falha</td></tr>
+            <tr><td>Modificador</td><td>Normalmente <code>±20%</code>; extremo <code>±40%</code></td></tr>
+            <tr><td>Oposto</td><td>Crítico vence normal; entre sucessos, maior resultado vence</td></tr>
+            <tr><td>Sorte</td><td><code>50%</code></td></tr>
+            <tr><td>HP</td><td><code>(STR + CON) ÷ 2</code>, arredondando para cima</td></tr>
+            <tr><td>WP / SAN / BP</td><td><code>WP = POW</code> • <code>SAN inicial = POW×5</code> • <code>BP = SAN atual−POW</code></td></tr>
+            <tr><td>2 HP ou menos</td><td>Inconsciente + teste de CON para evitar perda permanente de atributo</td></tr>
+            <tr><td>0 HP</td><td>Morte, salvo intervenção plausível aprovada pelo Handler</td></tr>
+            <tr><td>Primeiros Socorros</td><td><code>1D4 HP</code>, uma tentativa por novo ferimento</td></tr>
+            <tr><td>Lethality</td><td>Passou: 0 HP. Falhou: some os dois D10 percentuais</td></tr>
+            <tr><td>Insanidade temporária</td><td>Perder <code>5+ SAN</code> de uma vez</td></tr>
+            <tr><td>Transtorno</td><td>Atingir o Breaking Point e recalculá-lo</td></tr>
+            <tr><td>Projetar SAN</td><td>Gaste <code>1D4 WP</code>; reduza SAN e um Bond pelo mesmo valor</td></tr>
+            <tr><td>WP baixo</td><td><code>1–2 WP: −20%</code> em ações • <code>0 WP:</code> incapaz de obter sucesso</td></tr>
+            <tr><td>Movimento</td><td>3 m com outra ação; 10 m trote; 20 m corrida; 30 m sprint</td></tr>
+            <tr><td>Perícia que falhou</td><td>Marque; no fim da sessão recebe <code>+1%</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details open>
+        <summary>Sequência rápida de combate</summary>
+        <div class="details-body">
+          <ol>
+            <li>Ordene por DEX.</li>
+            <li>Cada personagem escolhe uma ação.</li>
+            <li>Declare defesa antes de já ter agido.</li>
+            <li>Resolva testes opostos quando aplicável.</li>
+            <li>Calcule dano, armadura, AP ou Lethality.</li>
+            <li>Verifique 2 HP, 0 HP, SAN e supressão.</li>
+          </ol>
+        </div>
+      </details>
+    </section>
+
+    <div id="globalNoResults" class="no-results">Nenhuma seção corresponde à busca. Tente outro termo.</div>
+
+    <footer>
+      Top Secret // Eyes Only // Documento de mesa não oficial<br>
+      Resumo de mecânicas para uso privado da campanha • Consulte os livros oficiais para tabelas e exceções completas
+    </footer>
+  </main>
+</div>
+
+<a class="back-top" id="backTop" href="#topo" aria-label="Voltar ao topo">↑</a>
+
+<script>
+  const normalize = (value) => value
+    .toLocaleLowerCase('pt-BR')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+  const skillSearch = document.getElementById('skillSearch');
+  const skillCategory = document.getElementById('skillCategory');
+  const skillCards = [...document.querySelectorAll('.skill-card')];
+  const skillNoResults = document.getElementById('skillNoResults');
+
+  function filterSkills() {
+    const term = normalize(skillSearch.value.trim());
+    const category = skillCategory.value;
+    let visible = 0;
+    skillCards.forEach(card => {
+      const text = normalize(card.textContent);
+      const categories = card.dataset.category.split(' ');
+      const matchesText = !term || text.includes(term);
+      const matchesCategory = category === 'all' || categories.includes(category);
+      const show = matchesText && matchesCategory;
+      card.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    skillNoResults.style.display = visible ? 'none' : 'block';
+  }
+  skillSearch.addEventListener('input', filterSkills);
+  skillCategory.addEventListener('change', filterSkills);
+
+  const globalSearch = document.getElementById('globalSearch');
+  const searchable = [...document.querySelectorAll('.searchable')];
+  const globalNoResults = document.getElementById('globalNoResults');
+
+  function runGlobalSearch() {
+    const term = normalize(globalSearch.value.trim());
+    let visible = 0;
+    searchable.forEach(block => {
+      const haystack = normalize((block.dataset.search || '') + ' ' + block.textContent);
+      const show = !term || haystack.includes(term);
+      block.classList.toggle('search-hidden', !show);
+      if (show) visible++;
+    });
+    globalNoResults.style.display = visible ? 'none' : 'block';
+  }
+  globalSearch.addEventListener('input', runGlobalSearch);
+  document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      globalSearch.focus();
+    }
+    if (event.key === 'Escape' && document.activeElement === globalSearch) {
+      globalSearch.value = '';
+      runGlobalSearch();
+      globalSearch.blur();
+    }
+  });
+
+  const toggleDetails = document.getElementById('toggleDetails');
+  let detailsOpen = false;
+  toggleDetails.addEventListener('click', () => {
+    detailsOpen = !detailsOpen;
+    document.querySelectorAll('details').forEach(detail => detail.open = detailsOpen);
+    toggleDetails.querySelector('.label').textContent = detailsOpen ? 'Fechar seções' : 'Abrir seções';
+  });
+
+  const tocLinks = [...document.querySelectorAll('.toc a')];
+  const observedSections = [...document.querySelectorAll('section.rule-section')];
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
+    if (!visible) return;
+    tocLinks.forEach(link => link.classList.toggle('active', link.getAttribute('href') === '#' + visible.target.id));
+  }, { rootMargin: '-20% 0px -68% 0px', threshold: [0, .1, .5] });
+  observedSections.forEach(section => observer.observe(section));
+
+  const backTop = document.getElementById('backTop');
+  window.addEventListener('scroll', () => backTop.classList.toggle('visible', window.scrollY > 700), { passive: true });
+</script>
+</body>
+</html>

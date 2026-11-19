@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delta Green · Sistema de Agentes</title>
+  <meta name="description" content="Sistema privado de fichas de agentes para campanhas de Delta Green.">
+  <meta name="theme-color" content="#070a08">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <a class="pular" href="#principal">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo-in">
+      <button class="marca" id="btn-inicio" type="button" aria-label="Voltar ao início">
+        <span class="marca-delta">DELTA</span><span class="marca-green">GREEN</span>
+        <span class="marca-sub">// sistema de agentes</span>
+      </button>
+      <div class="topo-acoes">
+        <a class="btn btn-fantasma" href="regras.html">Manual de campo</a>
+        <div class="sessao hidden" id="sessao">
+          <span class="sessao-nome" id="sessao-nome"></span>
+          <button class="btn btn-fantasma" type="button" id="btn-sair">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main id="principal">
+    <!-- ===================== LOBBY ===================== -->
+    <section class="tela" id="tela-lobby" aria-labelledby="t-lobby">
+      <div class="lobby-hero">
+        <p class="kicker">Protocolo de acesso // Nível Ômega</p>
+        <h1 id="t-lobby">Top secret // acesso restrito</h1>
+        <p class="lead">Escolha sua identidade operacional, recrute um novo agente ou entre como Handler.</p>
+      </div>
+
+      <div class="barra-lobby">
+        <div class="filtros" id="filtros" role="tablist" aria-label="Filtrar por operação"></div>
+        <div class="barra-botoes">
+          <button class="btn btn-fantasma" type="button" id="btn-handler">Acesso do Handler</button>
+          <button class="btn btn-verde" type="button" id="btn-recrutar">+ Novo recrutamento</button>
+        </div>
+      </div>
+
+      <div class="grade-agentes" id="grade-agentes" aria-live="polite"></div>
+    </section>
+
+    <!-- ===================== FICHA ===================== -->
+    <section class="tela hidden" id="tela-ficha" aria-labelledby="ficha-nome">
+      <div class="ficha-topo">
+        <button class="avatar-btn" type="button" id="btn-foto" aria-label="Trocar fotografia do agente">
+          <img id="ficha-foto" alt="" class="hidden">
+          <span class="avatar-iniciais" id="ficha-iniciais">DG</span>
+          <span class="avatar-dica">Trocar foto</span>
+        </button>
+        <div class="ficha-id">
+          <p class="kicker" id="ficha-operacao">Operação</p>
+          <h1 id="ficha-nome">Agente</h1>
+          <div class="ficha-tags">
+            <span class="pill" id="ficha-status">VIVO</span>
+            <span class="pill pill-kia hidden" id="ficha-kia">K.I.A.</span>
+            <span class="pill pill-suave" id="ficha-profissao"></span>
+          </div>
+        </div>
+        <button class="btn btn-fantasma hidden" type="button" id="btn-voltar-mestre">← Monitor do esquadrão</button>
+      </div>
+
+      <div class="ficha-grade">
+        <div class="painel">
+          <h2 class="painel-titulo">Atributos</h2>
+          <div class="atributos" id="atributos"></div>
+        </div>
+        <div class="painel">
+          <h2 class="painel-titulo">Estado do agente</h2>
+          <div class="vitais" id="vitais"></div>
+        </div>
+      </div>
+
+      <div class="abas" role="tablist" aria-label="Seções da ficha" id="abas">
+        <button role="tab" type="button" data-aba="main" aria-selected="true">Traços</button>
+        <button role="tab" type="button" data-aba="skills" aria-selected="false">Perícias</button>
+        <button role="tab" type="button" data-aba="inventory" aria-selected="false">Inventário</button>
+        <button role="tab" type="button" data-aba="combat" aria-selected="false">Combate</button>
+        <button role="tab" type="button" data-aba="info" aria-selected="false">Dossiê</button>
+      </div>
+      <div class="aba-conteudo" id="aba-conteudo" role="tabpanel"></div>
+    </section>
+
+    <!-- ===================== HANDLER ===================== -->
+    <section class="tela hidden" id="tela-mestre" aria-labelledby="t-mestre">
+      <div class="mestre-topo">
+        <div>
+          <p class="kicker">Handler // monitor do esquadrão</p>
+          <h1 id="t-mestre">Agentes em campo</h1>
+        </div>
+        <div class="barra-botoes">
+          <button class="btn btn-fantasma" type="button" id="btn-atualizar">Atualizar</button>
+          <button class="btn btn-verde" type="button" id="btn-registros">Registros</button>
+        </div>
+      </div>
+      <div class="filtros" id="filtros-mestre" role="tablist" aria-label="Filtrar por operação"></div>
+      <div class="grade-mestre" id="grade-mestre"></div>
+    </section>
+  </main>
+
+  <!-- ===================== JANELAS ===================== -->
+  <dialog class="janela" id="dlg-login" aria-labelledby="login-titulo">
+    <form method="dialog" class="janela-corpo" id="form-login">
+      <header class="janela-topo">
+        <h2 id="login-titulo">Identificação</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <p class="janela-sub" id="login-sub"></p>
+      <label class="campo hidden" id="campo-usuario">
+        <span>Usuário do Handler</span>
+        <input id="login-usuario" autocomplete="username">
+      </label>
+      <label class="campo">
+        <span>Chave de acesso</span>
+        <input id="login-senha" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn btn-verde btn-largo" type="submit" id="btn-entrar">Entrar</button>
+    </form>
+  </dialog>
+
+  <dialog class="janela janela-grande" id="dlg-recrutar" aria-labelledby="rec-titulo">
+    <form method="dialog" class="janela-corpo" id="form-recrutar">
+      <header class="janela-topo">
+        <h2 id="rec-titulo">Novo recrutamento</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+
+      <div class="rec-passo">
+        <h3><span>01</span> Identidade</h3>
+        <div class="campos-3">
+          <label class="campo"><span>Nome do agente</span><input id="rec-nome" maxlength="60" required></label>
+          <label class="campo"><span>Chave de acesso (mín. 4)</span><input id="rec-senha" type="password" minlength="4" autocomplete="new-password" required></label>
+          <label class="campo"><span>Operação</span><select id="rec-operacao" required></select></label>
+        </div>
+      </div>
+
+      <div class="rec-passo">
+        <h3><span>02</span> Atributos <small>4D6, descarta o menor, seis vezes</small></h3>
+        <p class="ajuda">Toque num resultado e depois no atributo. Toque no atributo de novo para devolver o número.</p>
+        <div class="dados" id="rec-dados"></div>
+        <div class="rec-atributos" id="rec-atributos"></div>
+        <div class="derivados" id="rec-derivados"></div>
+        <button class="btn btn-fantasma" type="button" id="btn-rerrolar">Rolar de novo</button>
+      </div>
+
+      <div class="rec-passo">
+        <h3><span>03</span> Treinamento <small>pontos restantes: <strong id="rec-pontos">250</strong></small></h3>
+        <p class="ajuda">Distribua até 250 pontos acima da base. Nenhuma perícia passa de 80%.</p>
+        <div class="rec-pericias" id="rec-pericias"></div>
+      </div>
+
+      <button class="btn btn-verde btn-largo" type="submit" id="btn-criar">Registrar agente</button>
+    </form>
+  </dialog>
+
+  <dialog class="janela" id="dlg-item" aria-labelledby="item-titulo">
+    <form method="dialog" class="janela-corpo" id="form-item">
+      <header class="janela-topo">
+        <h2 id="item-titulo">Adicionar</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <label class="campo"><span>Nome</span><input id="item-nome" maxlength="100" required></label>
+      <label class="campo"><span>Valor / descrição</span><textarea id="item-valor" rows="3" maxlength="5000"></textarea></label>
+      <button class="btn btn-verde btn-largo" type="submit">Adicionar</button>
+    </form>
+  </dialog>
+
+  <dialog class="janela janela-grande" id="dlg-arsenal" aria-labelledby="ars-titulo">
+    <div class="janela-corpo">
+      <header class="janela-topo">
+        <h2 id="ars-titulo">Arsenal</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <input class="busca" id="ars-busca" type="search" placeholder="Buscar arma, calibre ou categoria" aria-label="Buscar no arsenal">
+      <div class="filtros" id="ars-categorias"></div>
+      <div class="grade-arsenal" id="ars-lista"></div>
+    </div>
+  </dialog>
+
+  <dialog class="janela" id="dlg-glossario" aria-labelledby="glo-titulo">
+    <div class="janela-corpo">
+      <header class="janela-topo">
+        <h2 id="glo-titulo">Glossário</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <p id="glo-texto" class="glossario-texto"></p>
+    </div>
+  </dialog>
+
+  <dialog class="janela" id="dlg-foto" aria-labelledby="foto-titulo">
+    <div class="janela-corpo">
+      <header class="janela-topo">
+        <h2 id="foto-titulo">Fotografia operacional</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <p class="ajuda">Arraste para posicionar e use o controle para aproximar.</p>
+      <div class="recorte" id="recorte"><canvas id="recorte-canvas" width="320" height="320"></canvas></div>
+      <label class="campo"><span>Zoom</span><input type="range" id="recorte-zoom" min="1" max="3" step="0.01" value="1"></label>
+      <button class="btn btn-verde btn-largo" type="button" id="btn-salvar-foto">Salvar foto</button>
+    </div>
+  </dialog>
+
+  <dialog class="janela janela-grande" id="dlg-registros" aria-labelledby="reg-titulo">
+    <div class="janela-corpo">
+      <header class="janela-topo">
+        <h2 id="reg-titulo">Registros do sistema</h2>
+        <button class="fechar" type="button" data-fechar aria-label="Fechar">×</button>
+      </header>
+      <div class="terminal" id="reg-lista">Carregando...</div>
+    </div>
+  </dialog>
+
+  <input type="file" id="entrada-foto" accept="image/jpeg,image/png,image/webp" hidden>
+  <div class="avisos" id="avisos" popover="manual" aria-live="assertive"></div>
+  <noscript><p class="noscript">Este sistema precisa do JavaScript ativado.</p></noscript>
+</body>
+</html>

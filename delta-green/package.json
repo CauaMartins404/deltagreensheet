@@ -1,0 +1,16 @@
+{
+  "name": "delta-green-sistema-de-agentes",
+  "version": "3.0.0",
+  "private": true,
+  "description": "Sistema de fichas de agentes para campanhas de Delta Green (Netlify + MongoDB Atlas).",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node scripts/demo.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "mongodb": "^6.8.0"
+  }
+}
