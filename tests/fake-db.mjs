@@ -12,6 +12,7 @@ function matches(doc, filter = {}) {
       if ("$ne" in cond) return value !== cond.$ne;
       if ("$exists" in cond) return (value !== undefined) === cond.$exists;
       if ("$gte" in cond) return value >= cond.$gte;
+      if ("$lt" in cond) return value < cond.$lt;
     }
     return value === cond || String(value) === String(cond);
   });
@@ -66,6 +67,11 @@ class Collection {
     const index = this.docs.findIndex(x => matches(x, filter));
     if (index >= 0) this.docs.splice(index, 1);
     return { deletedCount: index >= 0 ? 1 : 0 };
+  }
+  async deleteMany(filter) {
+    const antes = this.docs.length;
+    this.docs = this.docs.filter(x => !matches(x, filter));
+    return { deletedCount: antes - this.docs.length };
   }
   async countDocuments(filter = {}) { return this.docs.filter(x => matches(x, filter)).length; }
   async distinct(field) { return [...new Set(this.docs.map(d => d[field]))]; }

@@ -169,6 +169,7 @@ async function carregarLobby() {
     const [config, lista] = await Promise.all([api("config", {}, { auth: false }), api("list", {}, { auth: false })]);
     estado.config = config.config;
     estado.agentes = lista.characters;
+    $("lobby-demo").classList.toggle("hidden", config.config.demo === false);
     desenharLobby();
   } catch (erro) {
     grade.replaceChildren(h("div", { class: "estado erro" },
@@ -386,10 +387,57 @@ async function criarAgente(evento) {
   }
 }
 
+// ---------- ficha de teste ----------
+function atributosAleatorios() {
+  return Object.fromEntries(ATRIBUTOS.map((a, i) => [a, rolarAtributo(i).valor]));
+}
+
+function periciasAleatorias() {
+  const pericias = { ...SKILLS_BASE };
+  const nomes = Object.keys(pericias);
+  let pontos = PONTOS_TREINO;
+  while (pontos > 0) {
+    const nome = nomes[Math.floor(Math.random() * nomes.length)];
+    const passo = Math.min(pontos, 10 * (1 + Math.floor(Math.random() * 3)));
+    if (pericias[nome] + passo > 80) continue;
+    pericias[nome] += passo;
+    pontos -= passo;
+  }
+  return pericias;
+}
+
+async function criarDemo() {
+  const botao = $("btn-demo");
+  ocupado(botao, true, "Preparando o agente...");
+  try {
+    const r = await api("demo", { attrs: atributosAleatorios(), skills: periciasAleatorias() }, { auth: false, tempo: 20000 });
+    estado.token = r.token;
+    gravarSessao(r.token);
+    aplicarEstado(r.session, r.data);
+    iniciarAtualizacao();
+    aviso("Ficha de teste criada. Pode mexer à vontade!");
+  } catch (erro) {
+    aviso(erro.message, "erro", 5000);
+  } finally {
+    ocupado(botao, false);
+  }
+}
+
+function desenharFaixaDemo(ficha) {
+  const faixa = $("faixa-demo");
+  faixa.classList.toggle("hidden", !ficha.demo);
+  if (!ficha.demo) return;
+  const hora = ficha.expiresAt ? new Date(ficha.expiresAt).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }) : "em breve";
+  faixa.replaceChildren(
+    h("strong", { text: "Ficha de teste" }),
+    h("span", { text: ` Mexa à vontade: troque PV e SAN, role perícias, adicione itens e armas. Ela será apagada sozinha às ${hora}.` }));
+}
+
 // ---------- ficha ----------
 function desenharFicha(ficha) {
   if (!ficha) return;
   estado.ficha = ficha;
+  desenharFaixaDemo(ficha);
   const morto = ficha.status === "MORTO";
   $("tela-ficha").classList.toggle("ficha-morto", morto);
   $("ficha-nome").textContent = ficha.name;
@@ -481,9 +529,11 @@ function linhaItem(secao, item, ehArma) {
         dataset: { salvar: "arma", campo, secao: secao.id, item: item.id, antigo: item.value || "" }
       })));
   } else {
-    const longo = estado.aba === "info" || String(item.value || "").length > 50;
+    const tamanho = String(item.value || "").length;
+    const longo = estado.aba === "info" || tamanho > 26;
     valor = h(longo ? "textarea" : "input", {
-      class: "campo-valor", value: item.value ?? "", readOnly: !editavel, rows: longo ? 2 : undefined,
+      class: "campo-valor", value: item.value ?? "", readOnly: !editavel,
+      rows: longo ? Math.min(6, Math.max(1, Math.ceil(tamanho / 38))) : undefined,
       "aria-label": item.label, dataset: { salvar: "item", secao: secao.id, item: item.id, antigo: item.value ?? "" }
     });
   }
@@ -506,7 +556,7 @@ function linhaPericia(secao, item) {
       class: "campo-valor", value: valor, readOnly: !ehMestre(), inputMode: "numeric", "aria-label": `${item.label} (%)`,
       dataset: { salvar: "item", secao: secao.id, item: item.id, antigo: valor }
     }),
-    h("button", { type: "button", class: "btn-dado", text: "🎲", title: `Rolar ${item.label}`, "aria-label": `Rolar ${item.label}`, onclick: () => rolarPericia(item.label, numero(valor)) }));
+    h("button", { type: "button", class: "btn-dado", text: "D100", title: `Rolar ${item.label}`, "aria-label": `Rolar ${item.label}`, onclick: () => rolarPericia(item.label, numero(valor)) }));
 }
 
 // Regra do Delta Green: D100 ≤ perícia é sucesso. 01 e dígitos iguais com sucesso = crítico;
@@ -839,6 +889,7 @@ function ligarEventos() {
   $("btn-sair").addEventListener("click", () => encerrarSessao(true));
   $("btn-handler").addEventListener("click", abrirLoginMestre);
   $("btn-recrutar").addEventListener("click", abrirRecrutamento);
+  $("btn-demo").addEventListener("click", criarDemo);
   $("form-login").addEventListener("submit", entrar);
   $("form-recrutar").addEventListener("submit", criarAgente);
   $("btn-rerrolar").addEventListener("click", () => { novoRecrutamento(); desenharRecrutamento(); desenharPericiasRecrutamento(); });
@@ -882,6 +933,13 @@ async function iniciar() {
   atualizarTopo();
   await carregarLobby();
   await restaurarSessao();
+  // Link direto para testar: deltagreen.netlify.app/?demo
+  const url = new URL(location.href);
+  if (url.searchParams.has("demo")) {
+    url.searchParams.delete("demo");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+    if (!estado.sessao && estado.config.demo !== false) criarDemo();
+  }
 }
 
 iniciar();

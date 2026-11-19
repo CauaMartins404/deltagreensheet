@@ -159,3 +159,60 @@ test("versão aumenta a cada alteração (proteção contra edição simultânea
   const r2 = await api({ action: "updateVital", characterId: agent.id, key: "sanCurrent", value: 45 }, auth);
   assert.equal(r2.body.character.version, r1.body.character.version + 1);
 });
+
+// ---------- fichas de teste ----------
+function setupComRelogio(extraEnv = {}) {
+  const db = fakeDb({ characters: ["normalizedName"] });
+  const relogio = { agora: new Date("2026-11-19T12:00:00Z") };
+  const api = createDeltaApi({ db, ...fakeIds, ...fakeHash, env: { ...env, ...extraEnv }, now: () => relogio.agora });
+  return { db, api, relogio };
+}
+
+test("ficha de teste: cria, entra direto e não aparece no lobby nem para o Handler", async () => {
+  const { api, db } = setupComRelogio();
+  await newAgent(api, "Agente Real");
+  const r = await api({ action: "demo", attrs, skills: { Atletismo: 50 } });
+  assert.equal(r.status, 200, JSON.stringify(r.body));
+  assert.ok(r.body.token);
+  assert.equal(r.body.data.demo, true);
+  assert.equal(r.body.data.campaign, "DEMONSTRAÇÃO");
+  assert.match(r.body.data.name, /^Agente Teste [0-9A-F]{4}$/);
+  assert.equal(r.body.data.sections.inventory[0].items.length, 3);
+  assert.ok(new Date(r.body.data.expiresAt) > new Date("2026-11-19T12:59:00Z"));
+  assert.ok(db.collections.characters.docs.find(d => d.demo).expiresAt instanceof Date);
+
+  const lista = await api({ action: "list" });
+  assert.deepEqual(lista.body.characters.map(c => c.name), ["Agente Real"]);
+  assert.ok(!(await api({ action: "config" })).body.config.campaigns.includes("DEMONSTRAÇÃO"));
+
+  const mestre = await api({ action: "login", mode: "master", username: "Mestre Kona", password: "segredo-mestre" });
+  assert.deepEqual(mestre.body.data.map(c => c.name), ["Agente Real"]);
+
+  const auth = `Bearer ${r.body.token}`;
+  const hp = await api({ action: "updateVital", characterId: r.body.data.id, key: "hpCurrent", value: 2 }, auth);
+  assert.equal(hp.body.character.vitals.hpCurrent, 2);
+  const registros = await api({ action: "logs" }, `Bearer ${mestre.body.token}`);
+  assert.ok(registros.body.logs.every(l => !l.characterName.startsWith("Agente Teste")));
+});
+
+test("ficha de teste vencida deixa de funcionar e é limpa", async () => {
+  const { api, db, relogio } = setupComRelogio({ DEMO_MINUTES: "30" });
+  const r = await api({ action: "demo", attrs, skills: {} });
+  const auth = `Bearer ${r.body.token}`;
+  relogio.agora = new Date("2026-11-19T12:31:00Z");
+  assert.equal((await api({ action: "updateVital", characterId: r.body.data.id, key: "hpCurrent", value: 1 }, auth)).status, 404);
+  await api({ action: "demo", attrs, skills: {} });
+  assert.equal(db.collections.characters.docs.filter(d => d.demo).length, 1, "a vencida foi apagada");
+});
+
+test("ficha de teste: limite, desligar e nome reservado", async () => {
+  const { api } = setupComRelogio({ DEMO_MAX: "2" });
+  assert.equal((await api({ action: "demo", attrs: { ...attrs, STR: 40 } })).status, 400);
+  assert.equal((await api({ action: "demo", attrs })).status, 200);
+  assert.equal((await api({ action: "demo", attrs })).status, 200);
+  assert.equal((await api({ action: "demo", attrs })).status, 429);
+  assert.equal((await api({ action: "create", name: "X", password: "1234", campaign: "demonstração", attrs })).status, 400);
+  const desligado = setupComRelogio({ DEMO_ENABLED: "false" });
+  assert.equal((await desligado.api({ action: "demo", attrs })).status, 403);
+  assert.equal((await desligado.api({ action: "config" })).body.config.demo, false);
+});

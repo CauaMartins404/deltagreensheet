@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#070a08">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800;900&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/app.css">
   <script type="module" src="js/app.js"></script>
 </head>
@@ -38,6 +38,10 @@
         <p class="kicker">Protocolo de acesso // Nível Ômega</p>
         <h1 id="t-lobby">Top secret // acesso restrito</h1>
         <p class="lead">Escolha sua identidade operacional, recrute um novo agente ou entre como Handler.</p>
+        <div class="lobby-demo hidden" id="lobby-demo">
+          <button class="btn btn-verde btn-grande" type="button" id="btn-demo">Testar com uma ficha de exemplo</button>
+          <p>Cria um agente de teste na hora, sem senha. Ele se apaga sozinho depois de um tempo.</p>
+        </div>
       </div>
 
       <div class="barra-lobby">
@@ -53,6 +57,7 @@
 
     <!-- ===================== FICHA ===================== -->
     <section class="tela hidden" id="tela-ficha" aria-labelledby="ficha-nome">
+      <div class="faixa-demo hidden" id="faixa-demo" role="note"></div>
       <div class="ficha-topo">
         <button class="avatar-btn" type="button" id="btn-foto" aria-label="Trocar fotografia do agente">
           <img id="ficha-foto" alt="" class="hidden">
@@ -73,11 +78,11 @@
 
       <div class="ficha-grade">
         <div class="painel">
-          <h2 class="painel-titulo">Atributos</h2>
+          <h2 class="painel-titulo"><span>01</span> Atributos</h2>
           <div class="atributos" id="atributos"></div>
         </div>
         <div class="painel">
-          <h2 class="painel-titulo">Estado do agente</h2>
+          <h2 class="painel-titulo"><span>02</span> Estado do agente</h2>
           <div class="vitais" id="vitais"></div>
         </div>
       </div>

@@ -7,6 +7,11 @@ import { signToken, verifyToken, parseDuration, safeEqual } from "./token.mjs";
 export const ATTRIBUTES = ["STR", "CON", "DEX", "INT", "POW", "CHA"];
 const VITAL_KEYS = ["hpCurrent", "hpMax", "wpCurrent", "wpMax", "sanCurrent", "sanMax", "breakingPoint"];
 const ISSUER = "delta-green-netlify";
+export const DEMO_CAMPAIGN = "DEMONSTRAÇÃO";
+const DEMO_PROFISSOES = [
+  ["Agente Especial", "FBI"], ["Epidemiologista", "CDC"], ["Analista de Inteligência", "NSA"],
+  ["Oficial de Campo", "CIA"], ["Médica Legista", "Polícia Federal"], ["Fuzileiro", "Marinha dos EUA"]
+];
 
 export class HttpError extends Error {
   constructor(status, message) {
@@ -96,7 +101,12 @@ export function createDeltaApi(deps) {
     fail(500, "Configure GM_PASSWORD no Netlify.");
   }
 
-  const masterQuery = session => (session.campaign && session.campaign !== "TODAS" ? { campaign: session.campaign } : {});
+  const masterQuery = session => ({
+    demo: { $ne: true },
+    ...(session.campaign && session.campaign !== "TODAS" ? { campaign: session.campaign } : {})
+  });
+  const agora = () => (deps.now ? deps.now() : new Date());
+  const expirada = c => Boolean(c?.demo && c.expiresAt && new Date(c.expiresAt) <= agora());
 
   function canAccess(session, character) {
     if (session.role === "player") return String(session.sub) === idStr(character._id);
@@ -107,7 +117,8 @@ export function createDeltaApi(deps) {
   const serialize = c => c && ({
     id: idStr(c._id), name: c.name, campaign: c.campaign, status: c.status || "VIVO", photo: c.photo || "",
     profile: c.profile || {}, attrs: c.attrs || {}, vitals: c.vitals || {}, sections: c.sections || {},
-    version: c.version || 1, createdAt: c.createdAt, updatedAt: c.updatedAt
+    version: c.version || 1, createdAt: c.createdAt, updatedAt: c.updatedAt,
+    demo: Boolean(c.demo), expiresAt: c.expiresAt || null
   });
 
   const summary = c => ({
@@ -137,7 +148,8 @@ export function createDeltaApi(deps) {
     await logs().insertOne({
       actor: session.name || "SISTEMA", role: session.role || "system",
       characterId: character._id, characterName: character.name, campaign: character.campaign,
-      message: cleanText(message, 500), createdAt: new Date()
+      message: cleanText(message, 500), createdAt: new Date(),
+      ...(character.demo ? { demo: true, expiresAt: character.expiresAt } : {})
     });
   }
 
@@ -148,7 +160,7 @@ export function createDeltaApi(deps) {
     if (!_id) fail(400, "Identificador de agente inválido.");
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const character = await characters().findOne({ _id });
-      if (!character) fail(404, "Agente não encontrado.");
+      if (!character || expirada(character)) fail(404, "Agente não encontrado (fichas de teste expiram sozinhas).");
       if (!canAccess(session, character)) fail(403, "Acesso negado a esta ficha.");
       const message = await change(character);
       const result = await characters().updateOne(
@@ -174,16 +186,54 @@ export function createDeltaApi(deps) {
     if (session.role !== "master" && !section.dynamic) fail(403, message);
   }
 
+  const demoAtivo = () => String(env.DEMO_ENABLED ?? "true").toLowerCase() !== "false";
+
+  async function montarAgente({ name, campaign, password, attrs: brutos, skills: pericias }) {
+    const attrs = {};
+    for (const key of ATTRIBUTES) {
+      const value = Number.parseInt(brutos?.[key], 10);
+      if (!Number.isFinite(value) || value < 3 || value > 18) fail(400, "Atributos inválidos.");
+      attrs[key] = value;
+    }
+    const skills = {};
+    for (const [key, value] of Object.entries(pericias || {}).slice(0, 80)) {
+      skills[cleanText(key, 100)] = cleanInteger(value, 0, 80);
+    }
+    // Valores derivados são calculados aqui no servidor, não confiamos no navegador.
+    const hp = Math.ceil((attrs.STR + attrs.CON) / 2);
+    const san = attrs.POW * 5;
+    const now = new Date();
+    return {
+      name, normalizedName: normalizeName(name), passwordHash: await hashPassword(password),
+      campaign, status: "VIVO", photo: "",
+      profile: { profession: "Agente de Campo", employer: "Delta Green", age: "30", nationality: "Brasil" },
+      attrs,
+      vitals: { hpCurrent: hp, hpMax: hp, wpCurrent: attrs.POW, wpMax: attrs.POW, sanCurrent: san, sanMax: san, breakingPoint: san - attrs.POW },
+      sections: defaultSections(skills), version: 1, createdAt: now, updatedAt: now
+    };
+  }
+
+  async function salvarNovo(character) {
+    try {
+      const inserted = await characters().insertOne(character);
+      character._id = inserted.insertedId;
+    } catch (error) {
+      if (error?.code === 11000) fail(409, "Já existe um agente com esse nome.");
+      throw error;
+    }
+  }
+
   // ---------- ações públicas ----------
   const publicActions = {
     async config() {
       const stored = await characters().distinct("campaign");
-      return { config: { campaigns: [...new Set([...defaultCampaigns(), ...stored.filter(Boolean)])], handlerName: handlerName() } };
+      const campanhas = [...new Set([...defaultCampaigns(), ...stored.filter(c => c && c !== DEMO_CAMPAIGN)])];
+      return { config: { campaigns: campanhas, handlerName: handlerName(), demo: demoAtivo() } };
     },
 
     async list() {
       const docs = await characters()
-        .find({}, { projection: { name: 1, campaign: 1, status: 1, photo: 1, profile: 1, updatedAt: 1 } })
+        .find({ demo: { $ne: true } }, { projection: { name: 1, campaign: 1, status: 1, photo: 1, profile: 1, updatedAt: 1 } })
         .sort({ campaign: 1, name: 1 }).toArray();
       return { characters: docs.map(summary) };
     },
@@ -193,42 +243,55 @@ export function createDeltaApi(deps) {
       const campaign = cleanCampaign(body.campaign);
       const password = String(body.password || "");
       if (!name || !campaign) fail(400, "Nome e operação são obrigatórios.");
+      if (campaign === DEMO_CAMPAIGN) fail(400, "Essa operação é reservada para fichas de teste.");
       if (password.length < 4) fail(400, "A chave de acesso precisa ter pelo menos 4 caracteres.");
-
-      const attrs = {};
-      for (const key of ATTRIBUTES) {
-        const value = Number.parseInt(body.attrs?.[key], 10);
-        if (!Number.isFinite(value) || value < 3 || value > 18) fail(400, "Atributos inválidos.");
-        attrs[key] = value;
-      }
-
-      const skills = {};
-      for (const [key, value] of Object.entries(body.skills || {}).slice(0, 80)) {
-        skills[cleanText(key, 100)] = cleanInteger(value, 0, 80);
-      }
-
-      // Valores derivados são calculados aqui no servidor, não confiamos no navegador.
-      const hp = Math.ceil((attrs.STR + attrs.CON) / 2);
-      const san = attrs.POW * 5;
-      const now = new Date();
-      const character = {
-        name, normalizedName: normalizeName(name), passwordHash: await hashPassword(password),
-        campaign, status: "VIVO", photo: "",
-        profile: { profession: "Agente de Campo", employer: "Delta Green", age: "30", nationality: "Brasil" },
-        attrs,
-        vitals: { hpCurrent: hp, hpMax: hp, wpCurrent: attrs.POW, wpMax: attrs.POW, sanCurrent: san, sanMax: san, breakingPoint: san - attrs.POW },
-        sections: defaultSections(skills), version: 1, createdAt: now, updatedAt: now
-      };
-
-      try {
-        const inserted = await characters().insertOne(character);
-        character._id = inserted.insertedId;
-      } catch (error) {
-        if (error?.code === 11000) fail(409, "Já existe um agente com esse nome.");
-        throw error;
-      }
+      const character = await montarAgente({ name, campaign, password, attrs: body.attrs, skills: body.skills });
+      await salvarNovo(character);
       await writeLog({ name, role: "player" }, character, "agente registrado no sistema");
       return { character: summary(character) };
+    },
+
+    // Ficha de teste: qualquer visitante cria, entra direto e ela some sozinha.
+    async demo(body) {
+      if (!demoAtivo()) fail(403, "Fichas de teste estão desligadas.");
+      const minutos = Math.max(5, Math.min(24 * 60, Number.parseInt(env.DEMO_MINUTES || "60", 10) || 60));
+      const limite = Math.max(1, Number.parseInt(env.DEMO_MAX || "30", 10) || 30);
+      await characters().deleteMany({ demo: true, expiresAt: { $lt: agora() } });
+      if ((await characters().countDocuments({ demo: true })) >= limite) {
+        fail(429, "Muitas fichas de teste abertas agora. Tente de novo em alguns minutos.");
+      }
+      const codigo = crypto.randomBytes(2).toString("hex").toUpperCase();
+      const [profissao, empregador] = DEMO_PROFISSOES[crypto.randomInt(DEMO_PROFISSOES.length)];
+      const expiresAt = new Date(agora().getTime() + minutos * 60_000);
+      const character = await montarAgente({
+        name: `Agente Teste ${codigo}`, campaign: DEMO_CAMPAIGN, password: crypto.randomBytes(18).toString("base64url"),
+        attrs: body.attrs, skills: body.skills
+      });
+      Object.assign(character, { demo: true, expiresAt });
+      character.profile = { ...character.profile, profession: profissao, employer: empregador, age: String(25 + crypto.randomInt(20)) };
+      const info = character.sections.info[0].items;
+      info.find(i => i.label === "Profissão").value = profissao;
+      info.find(i => i.label === "Empregador").value = empregador;
+      info.find(i => i.label === "Idade").value = character.profile.age;
+      character.sections.main[0].items = [
+        { id: newId(), label: "Características Distintivas", value: "Calmo sob pressão, observador" },
+        { id: newId(), label: "Bonds", value: "Irmã mais nova; parceiro da academia" },
+        { id: newId(), label: "Motivações", value: "Descobrir a verdade sobre o primeiro caso" }
+      ];
+      character.sections.inventory[0].items = [
+        { id: newId(), label: "Distintivo e credencial", value: "1" },
+        { id: newId(), label: "Lanterna tática", value: "1" },
+        { id: newId(), label: "Kit de primeiros socorros", value: "1" }
+      ];
+      character.sections.combat[0].items = [
+        { id: newId(), label: "Pistola 9mm", value: "1D10 | Pistola leve | 15 (15m)" }
+      ];
+      await salvarNovo(character);
+      await writeLog({ name: character.name, role: "player" }, character, "ficha de teste criada");
+      const session = { role: "player", name: character.name, campaign: character.campaign };
+      const restante = Math.floor((expiresAt.getTime() - agora().getTime()) / 1000);
+      const token = signToken({ sub: idStr(character._id), ...session }, jwtSecret(), { expiresIn: restante, issuer: ISSUER });
+      return { token, session, data: serialize(character) };
     },
 
     async login(body) {
@@ -244,7 +307,7 @@ export function createDeltaApi(deps) {
       const _id = toId(body.characterId);
       if (!_id) fail(400, "Agente inválido.");
       const character = await characters().findOne({ _id });
-      if (!character || !(await comparePassword(String(body.password || ""), character.passwordHash))) {
+      if (!character || expirada(character) || !(await comparePassword(String(body.password || ""), character.passwordHash))) {
         fail(401, "Chave de acesso inválida.");
       }
       const session = { role: "player", name: character.name, campaign: character.campaign };
@@ -263,7 +326,7 @@ export function createDeltaApi(deps) {
       const _id = toId(session.sub);
       if (!_id) fail(401, "Sessão inválida.");
       const character = await characters().findOne({ _id });
-      if (!character) fail(404, "Agente não encontrado.");
+      if (!character || expirada(character)) fail(404, "Agente não encontrado (fichas de teste expiram sozinhas).");
       return { session: clean, data: serialize(character) };
     },
 

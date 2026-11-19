@@ -16,7 +16,10 @@ async function connect() {
   await Promise.all([
     db.collection("characters").createIndex({ normalizedName: 1 }, { unique: true }),
     db.collection("characters").createIndex({ campaign: 1, name: 1 }),
-    db.collection("logs").createIndex({ campaign: 1, createdAt: -1 })
+    db.collection("logs").createIndex({ campaign: 1, createdAt: -1 }),
+    // Fichas de teste (e os registros delas) têm "expiresAt": o MongoDB apaga sozinho quando vence.
+    db.collection("characters").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 }),
+    db.collection("logs").createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
   ]);
   return createDeltaApi({
     db,
